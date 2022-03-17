@@ -17,6 +17,8 @@ class UserController extends Controller
 
     public function user(Request $request)
     {
+        $this->authorize('1');
+
         return $request->user();
     }
 

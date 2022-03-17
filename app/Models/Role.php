@@ -10,8 +10,9 @@ class Role extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'name',
-        'slug'
+        'slug',
     ];
 
     public function permissions()

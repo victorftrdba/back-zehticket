@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use App\Models\Permission;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -29,8 +31,8 @@ class AuthServiceProvider extends ServiceProvider
         $permissions = Permission::with('roles')->get();
 
         foreach ($permissions as $permission) {
-            Gate::define($permission->name, function (User $user) use ($permission) {
-                return $user->hasPermission($permission) ? Response::allow() : Response::deny('Sem autorização');
+            Gate::define($permission->id, function (User $user) use ($permission) {
+                return $user->hasPermission($permission) ? Response::allow() : Response::deny();
             });
         }
     }

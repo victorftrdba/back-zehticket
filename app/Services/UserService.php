@@ -43,6 +43,8 @@ class UserService {
             'password' => Hash::make($request->password),
         ]);
 
+        $user->roles()->attach([1]);
+
         return response()->json(['success' => $user]);
     }
 
