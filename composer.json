@@ -1,9 +1,17 @@
 {
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "API v1 - ZehTicket",
     "keywords": ["framework", "laravel"],
-    "license": "MIT",
+    "authors": [
+        {
+            "name": "Victor Hugo Nogueira",
+            "email": "victornogu80@gmail.com",
+            "homepage": "Em Desenvolvimento",
+            "role": "Desenvolvedor"
+        }
+    ],
+    "proprietary": "Victor Hugo Nogueira",
     "require": {
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.2",
