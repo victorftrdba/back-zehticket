@@ -38,6 +38,8 @@ class UserController extends Controller
 
     public function logout(Request $request)
     {
+        $this->authorize('3');
+
         $response = $this->userService->logout($request);
 
         return $response;

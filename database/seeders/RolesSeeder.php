@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Role;
+use App\Models\Permission;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -19,6 +20,11 @@ class RolesSeeder extends Seeder
         $roles = [
             [
                 'id' => 1,
+                'name' => 'Desenvolvedor',
+                'slug' => Str::slug('Desenvolvedor'),
+            ],
+            [
+                'id' => 2,
                 'name' => 'Usuario',
                 'slug' => Str::slug('Usuario'),
             ]
@@ -26,7 +32,13 @@ class RolesSeeder extends Seeder
 
         foreach ($roles as $role)
         {
-            Role::create($role);
+            $role_created = Role::create($role);
+
+            if ($role['id'] === 1)
+            {
+                $permissions = Permission::get()->pluck('id');
+                $role_created->permissions()->attach($permissions);
+            }
         }
 
         return true;
