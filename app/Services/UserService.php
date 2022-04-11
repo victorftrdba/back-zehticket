@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class UserService {
+    /**
+     * Recebe dados para logar
+     *
+     * @return token
+     */
     public function login($request)
     {
         $request->validate([
@@ -29,6 +34,11 @@ class UserService {
         ]);
     }
 
+    /**
+     * Recebe dados para realizar registro do usuário
+     *
+     * @return success
+     */
     public function register($request)
     {
         $request->validate([
@@ -48,6 +58,11 @@ class UserService {
         return response()->json(['success' => $user]);
     }
 
+    /**
+     * Realiza logout e limpeza dos tokens
+     *
+     * @return false
+     */
     public function logout($request)
     {
         $user = $request->user();

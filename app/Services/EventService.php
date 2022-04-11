@@ -7,6 +7,11 @@ use App\Models\Payment;
 use App\Helpers\Constants;
 
 class EventService {
+    /**
+     * Mostra todos os eventos registrados com paginação
+     *
+     * @return events
+     */
     public function findAll()
     {
         $events = Event::with('user')->paginate(15)->toArray();
@@ -14,6 +19,11 @@ class EventService {
         return $events;
     }
 
+    /**
+     * Faz a criação de um novo evento
+     *
+     * @return success
+     */
     public function store($request)
     {
         $request->validate([
@@ -34,6 +44,12 @@ class EventService {
         ];
     }
 
+    /**
+     * Durante a compra do ticket é localizado a forma
+     * de pagamento selecionado pelo cliente
+     *
+     * @return payment
+     */
     public function buyTicket($request)
     {
         $request->validate([
@@ -88,6 +104,11 @@ class EventService {
         }
     }
 
+    /**
+     * Mostra eventos do cliente
+     *
+     * @return events
+     */
     public function showUserEvents($request)
     {
         $user = $request->user();
