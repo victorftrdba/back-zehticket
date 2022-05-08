@@ -17,13 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->decimal('value');
             $table->text('image');
             $table->text('address');
             $table->unsignedBigInteger('user_id');
             $table->timestamp('date')->nullable();
             $table->timestamp('expires')->nullable();
-            $table->integer('amount');
             $table->timestamps();
         });
     }
