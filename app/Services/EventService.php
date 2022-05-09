@@ -14,7 +14,7 @@ class EventService {
      */
     public function findAll()
     {
-        $events = Event::with('user')->paginate(15)->toArray();
+        $events = Event::with(['user', 'tickets'])->paginate(15)->toArray();
 
         return $events;
     }

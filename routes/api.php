@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\EventController;
 
-// Rotas usuário
+// Rotas usuÃ¡rio
 Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'user']);
 Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::post('/register', [UserController::class, 'register']);
