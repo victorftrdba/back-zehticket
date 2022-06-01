@@ -20,7 +20,7 @@ class EventService {
 
     public function show($id)
     {
-        return Event::find($id);
+        return Event::with('tickets')->find($id);
     }
 
     /**
