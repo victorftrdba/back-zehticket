@@ -14,5 +14,6 @@ Route::middleware('auth:sanctum')->post('/logout', [UserController::class, 'logo
 // Rotas evento
 Route::middleware('auth:sanctum')->post('/new-event', [EventController::class, 'store']);
 Route::get('/show-events', [EventController::class, 'findAll']);
+Route::get('/show-events/{id}', [EventController::class, 'show']);
 Route::middleware('auth:sanctum')->post('/buy-ticket', [EventController::class, 'buyTicket']);
 Route::middleware('auth:sanctum')->get('/show-user-events', [EventController::class, 'showUserEvents']);

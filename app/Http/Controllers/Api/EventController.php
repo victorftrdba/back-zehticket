@@ -22,6 +22,13 @@ class EventController extends Controller
         return $response;
     }
 
+    public function show($id)
+    {
+        $response = $this->eventService->show($id);
+
+        return $response;
+    }
+
     public function store(Request $request)
     {
         $this->authorize('2');
