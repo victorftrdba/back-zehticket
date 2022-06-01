@@ -13,7 +13,7 @@ class RolesSeeder extends Seeder
     /**
      * Run the database seeds.
      *
-     * @return void
+     * @return bool
      */
     public function run()
     {
@@ -33,12 +33,8 @@ class RolesSeeder extends Seeder
         foreach ($roles as $role)
         {
             $role_created = Role::create($role);
-
-            if ($role['id'] === 1)
-            {
-                $permissions = Permission::get()->pluck('id');
-                $role_created->permissions()->attach($permissions);
-            }
+            $permissions = Permission::get()->pluck('id');
+            $role_created->permissions()->attach($permissions);
         }
 
         return true;
