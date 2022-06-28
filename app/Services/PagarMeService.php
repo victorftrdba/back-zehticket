@@ -17,6 +17,8 @@ class PagarMeService
     {
         $expiration_year = substr($card_info['card_expiration_year'], -2);
 
+        $expiration_month = strlen($card_info['card_expiration_month']) === 1 ? "0{$card_info['card_expiration_month']}" : $card_info['card_expiration_month'];
+
         $data = [
             'amount' => (($ticket->value * $amount) * 100),
             'card_holder_name' => $card_info['card_name'],
