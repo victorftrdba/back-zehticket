@@ -69,14 +69,6 @@ class EventService {
 
         $pagarme = new PagarMeService;
 
-        $card_info = [
-            'card_number' => $request->card_number,
-            'card_name' => $request->card_name,
-            'card_cvc' => $request->card_cvc,
-            'card_expiration_month' => $request->card_expiration_month,
-            'card_expiration_year' => $request->card_expiration_year,
-        ];
-
         $ticket = Ticket::find($request->ticket_id);
 
         if ($ticket->amount === 0 || $request->amount > $ticket->amount) {
@@ -88,6 +80,14 @@ class EventService {
 
         switch ($request->get('payment_type')) {
             case Constants::CARTAO_CREDITO:
+                $card_info = [
+                    'card_number' => $request->card_number,
+                    'card_name' => $request->card_name,
+                    'card_cvc' => $request->card_cvc,
+                    'card_expiration_month' => $request->card_expiration_month,
+                    'card_expiration_year' => $request->card_expiration_year,
+                ];
+
                 $credit_card = $pagarme->payWithCreditCard($request->user(), $ticket, $card_info, $request->amount);
 
                 $payment = Payment::create([
