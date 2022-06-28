@@ -60,7 +60,7 @@ class EventService {
             'payment_type' => 'required|integer',
             'card_number' => 'integer',
             'card_name' => 'string',
-            'card_cvv' => 'integer',
+            'card_cvc' => 'integer',
             'card_expiration_month' => 'integer',
             'card_expiration_year' => 'integer',
             'ticket_id' => 'required|integer',
@@ -72,7 +72,7 @@ class EventService {
         $card_info = [
             'card_number' => $request->card_number,
             'card_name' => $request->card_name,
-            'card_cvv' => $request->card_cvv,
+            'card_cvc' => $request->card_cvc,
             'card_expiration_month' => $request->card_expiration_month,
             'card_expiration_year' => $request->card_expiration_year,
         ];
