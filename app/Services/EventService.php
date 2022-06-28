@@ -64,14 +64,14 @@ class EventService {
             'card_expiration_month' => 'integer',
             'card_expiration_year' => 'integer',
             'tickets' => 'required|array',
-            'tickets.*.ticket_id' => 'required|integer',
+            'tickets.*.id' => 'required|integer',
             'tickets.*.amount' => 'required|integer',
         ]);
 
         $pagarme = new PagarMeService;
 
         foreach ($request->tickets as $ticket) {
-            $infoTicket = Ticket::find($ticket->ticket_id);
+            $infoTicket = Ticket::find($ticket->id);
 
             if ($infoTicket->amount === 0 || $ticket->amount > $infoTicket->amount) {
                 return [
