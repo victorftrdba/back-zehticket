@@ -139,7 +139,7 @@ class EventService {
                 ];
         }
 
-        return $result;
+        return $payment;
     }
 
     /**
