@@ -63,80 +63,83 @@ class EventService {
             'card_cvc' => 'integer',
             'card_expiration_month' => 'integer',
             'card_expiration_year' => 'integer',
-            'ticket_id' => 'required|integer',
-            'amount' => 'required|integer',
+            'tickets' => 'required|array',
+            'tickets.*.ticket_id' => 'required|integer',
+            'tickets.*.amount' => 'required|integer',
         ]);
 
         $pagarme = new PagarMeService;
 
-        $ticket = Ticket::find($request->ticket_id);
+        foreach ($request->tickets as $ticket) {
+            $infoTicket = Ticket::find($ticket->ticket_id);
 
-        if ($ticket->amount === 0 || $request->amount > $ticket->amount) {
-            return [
-                'error' => true,
-                'message' => 'Ingressos esgotados ou insuficientes.'
-            ];
-        }
-
-        switch ($request->get('payment_type')) {
-            case Constants::CARTAO_CREDITO:
-                $card_info = [
-                    'card_number' => $request->card_number,
-                    'card_name' => $request->card_name,
-                    'card_cvc' => $request->card_cvc,
-                    'card_expiration_month' => $request->card_expiration_month,
-                    'card_expiration_year' => $request->card_expiration_year,
+            if ($infoTicket->amount === 0 || $ticket->amount > $infoTicket->amount) {
+                return [
+                    'error' => true,
+                    'message' => 'Ingressos esgotados ou insuficientes.'
                 ];
+            }
 
-                $credit_card = $pagarme->payWithCreditCard($request->user(), $ticket, $card_info, $request->amount);
+            switch ($request->payment_type) {
+                case Constants::CARTAO_CREDITO:
+                    $card_info = [
+                        'card_number' => $request->card_number,
+                        'card_name' => $request->card_name,
+                        'card_cvc' => $request->card_cvc,
+                        'card_expiration_month' => $request->card_expiration_month,
+                        'card_expiration_year' => $request->card_expiration_year,
+                    ];
 
-                $payment = Payment::create([
-                    'total' => $credit_card['amount'],
-                    'payment_type' => Constants::CARTAO_CREDITO,
-                    'card_number' => $credit_card['last_digits'],
-                    'receipt' => $credit_card['transaction_id'],
-                    'user_id' => $request->user()->id,
-                    'event_id' => $ticket->event->id,
-                ]);
+                    $credit_card = $pagarme->payWithCreditCard($request->user(), $infoTicket, $card_info, $ticket->amount);
 
-                if ($pagarme->captureTransaction($credit_card['transaction_id'])->status === "paid") {
-                    $ticket->decrement('amount', $request->amount);
-                };
-                break;
-            case Constants::BOLETO:
-                $payment = Payment::create([
-                    'total' => 500,
-                    'payment_type' => Constants::BOLETO,
-                    'receipt' => 'sem integração com api por ora',
-                    'user_id' => $request->user_id,
-                    'event_id' => $ticket->event->id,
-                ]);
-                break;
-            case Constants::TRANSFERENCIA:
-                $payment = Payment::create([
-                    'total' => 500,
-                    'payment_type' => Constants::TRANSFERENCIA,
-                    'receipt' => 'sem integração com api por ora',
-                    'user_id' => $request->user_id,
-                    'event_id' => $ticket->event->id,
-                ]);
-                break;
-            case Constants::PIX:
-                $payment = Payment::create([
-                    'total' => 500,
-                    'payment_type' => Constants::PIX,
-                    'receipt' => 'sem integração com api por ora',
-                    'user_id' => $request->user_id,
-                    'event_id' => $ticket->event->id,
-                ]);
-                break;
-            default:
-                $payment = [
-                    'error' => 'Nenhuma opção selecionada!',
-                ];
+                    $payment = Payment::create([
+                        'total' => $credit_card['amount'],
+                        'payment_type' => Constants::CARTAO_CREDITO,
+                        'card_number' => $credit_card['last_digits'],
+                        'receipt' => $credit_card['transaction_id'],
+                        'user_id' => $request->user()->id,
+                        'event_id' => $infoTicket->event->id,
+                    ]);
+
+                    if ($pagarme->captureTransaction($credit_card['transaction_id'])->status === "paid") {
+                        $infoTicket->decrement('amount', $ticket->amount);
+                    };
+                    break;
+                case Constants::BOLETO:
+                    $payment = Payment::create([
+                        'total' => 500,
+                        'payment_type' => Constants::BOLETO,
+                        'receipt' => 'sem integração com api por ora',
+                        'user_id' => $request->user_id,
+                        'event_id' => $infoTicket->event->id,
+                    ]);
+                    break;
+                case Constants::TRANSFERENCIA:
+                    $payment = Payment::create([
+                        'total' => 500,
+                        'payment_type' => Constants::TRANSFERENCIA,
+                        'receipt' => 'sem integração com api por ora',
+                        'user_id' => $request->user_id,
+                        'event_id' => $infoTicket->event->id,
+                    ]);
+                    break;
+                case Constants::PIX:
+                    $payment = Payment::create([
+                        'total' => 500,
+                        'payment_type' => Constants::PIX,
+                        'receipt' => 'sem integração com api por ora',
+                        'user_id' => $request->user_id,
+                        'event_id' => $infoTicket->event->id,
+                    ]);
+                    break;
+                default:
+                    $payment = [
+                        'error' => 'Nenhuma opção selecionada!',
+                    ];
+            }
+
+            return $payment;
         }
-
-        return $payment;
     }
 
     /**
