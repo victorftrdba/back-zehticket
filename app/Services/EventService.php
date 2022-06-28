@@ -71,9 +71,9 @@ class EventService {
         $pagarme = new PagarMeService;
 
         foreach ($request->tickets as $ticket) {
-            $infoTicket = Ticket::find($ticket->id);
+            $infoTicket = Ticket::find($ticket['id']);
 
-            if ($infoTicket->amount === 0 || $ticket->amount > $infoTicket->amount) {
+            if ($infoTicket->amount === 0 || $ticket['amount'] > $infoTicket->amount) {
                 return [
                     'error' => true,
                     'message' => 'Ingressos esgotados ou insuficientes.'
@@ -90,7 +90,7 @@ class EventService {
                         'card_expiration_year' => $request->card_expiration_year,
                     ];
 
-                    $credit_card = $pagarme->payWithCreditCard($request->user(), $infoTicket, $card_info, $ticket->amount);
+                    $credit_card = $pagarme->payWithCreditCard($request->user(), $infoTicket, $card_info, $ticket['amount']);
 
                     $payment = Payment::create([
                         'total' => $credit_card['amount'],
@@ -102,7 +102,7 @@ class EventService {
                     ]);
 
                     if ($pagarme->captureTransaction($credit_card['transaction_id'])->status === "paid") {
-                        $infoTicket->decrement('amount', $ticket->amount);
+                        $infoTicket->decrement('amount', $ticket['amount']);
                     };
                     break;
                 case Constants::BOLETO:
