@@ -70,6 +70,8 @@ class EventService {
 
         $pagarme = new PagarMeService;
 
+        $result = [];
+
         foreach ($request->tickets as $ticket) {
             $infoTicket = Ticket::find($ticket['id']);
 
@@ -138,8 +140,10 @@ class EventService {
                     ];
             }
 
-            return $payment;
+            $result[] = $payment;
         }
+
+        return $result;
     }
 
     /**
