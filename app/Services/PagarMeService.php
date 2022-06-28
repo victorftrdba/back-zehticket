@@ -22,7 +22,7 @@ class PagarMeService
         $data = [
             'amount' => (($ticket->value * $amount) * 100),
             'card_holder_name' => $card_info['card_name'],
-            'card_expiration_date' => "{$card_info['card_expiration_month']}{$expiration_year}", // MMAA
+            'card_expiration_date' => "{$expiration_month}{$expiration_year}", // MMAA
             'card_number' => $card_info['card_number'],
             'card_cvc' => $card_info['card_cvc'],
             'payment_method' => 'credit_card',
