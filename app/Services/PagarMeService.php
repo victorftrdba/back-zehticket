@@ -15,12 +15,18 @@ class PagarMeService
 
     public function payWithCreditCard($user, $ticket, $card_info, $amount)
     {
+        $total = 0;
+
+        foreach ($ticket as $selectedTicket) {
+            $total += ($selectedTicket['total_value'] * $selectedTicket['amount']);
+        }
+
         $expiration_year = substr($card_info['card_expiration_year'], -2);
 
         $expiration_month = strlen($card_info['card_expiration_month']) === 1 ? "0{$card_info['card_expiration_month']}" : $card_info['card_expiration_month'];
 
         $data = [
-            'amount' => (($ticket->value * $amount) * 100),
+            'amount' => ($total * 100),
             'card_holder_name' => $card_info['card_name'],
             'card_expiration_date' => "{$expiration_month}{$expiration_year}", // MMAA
             'card_number' => (string) $card_info['card_number'],
@@ -57,15 +63,17 @@ class PagarMeService
             ]
         ];
 
-        $data['items'] = [
-            [
-                'id' => (string) $ticket->id,
-                'title' => $ticket->description,
-                'unit_price' => ($ticket->value * 100),
-                'quantity' => $amount,
-                'tangible' => true
-            ]
-        ];
+        foreach ($ticket as $_selectedTicket) {
+            $data['items'] = [
+                [
+                    'id' => (string) $_selectedTicket['id'],
+                    'title' => $_selectedTicket['description'],
+                    'unit_price' => ($_selectedTicket['total_value'] * 100),
+                    'quantity' => $_selectedTicket['amount'],
+                    'tangible' => true
+                ]
+            ];
+        }
 
         $transaction = $this->pagarme->transactions()->create($data);
 
