@@ -16,7 +16,7 @@
                 <?php
                     $qrCodeAsPng = QrCode::format('png')->size(200)->encoding('UTF-8')->generate($code->code);
                 ?>
-                <img src="{!!$message->embedData($qrCodeAsPng, 'QrCode.png', 'image/png')!!}">
+                <img src="{{ $message->embedData($qrCodeAsPng, 'QrCode.png', 'image/png')  }}">
                 </div>
                 <div>Ingresso: <b>{{ $code->ticket->description }} | {{ $code->code }}</b></div>
                 <div>Evento: <b>{{ $code->event->title }}</b></div>
