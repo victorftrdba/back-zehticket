@@ -76,7 +76,7 @@ class EventService {
             if ($ticket['quantity'] > 0) {
                 $infoTicket = Ticket::find($ticket['id']);
 
-                if ($infoTicket->amount === 0 || $ticket['amount'] > $infoTicket->amount) {
+                if ($infoTicket->amount === 0 || $ticket['quantity'] > $infoTicket->amount) {
                     return [
                         'error' => true,
                         'message' => 'Ingressos esgotados ou insuficientes.'
