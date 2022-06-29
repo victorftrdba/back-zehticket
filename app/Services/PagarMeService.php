@@ -18,7 +18,7 @@ class PagarMeService
         $total = 0;
 
         foreach ($ticket as $selectedTicket) {
-            $total += ($selectedTicket['total_value'] * $selectedTicket['amount']);
+            $total += (floatval($selectedTicket['value']) * $selectedTicket['amount']);
         }
 
         $expiration_year = substr($card_info['card_expiration_year'], -2);
