@@ -14,7 +14,7 @@
             <div style="margin-bottom:15px;">
                 <div>QRCode:
                 <?php
-                    $qrCodeAsPng = QrCode::format('png')->size(200)->encoding('UTF-8')->generate($code->code);
+                    $qrCodeAsPng = (string) QrCode::format('png')->size(200)->encoding('UTF-8')->generate($code->code);
                 ?>
                 <img src="data:image/png;base64,{!! base64_encode($qrCodeAsPng) !!}">
                 </div>
