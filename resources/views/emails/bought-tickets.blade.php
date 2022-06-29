@@ -9,21 +9,10 @@
 </head>
 
 <body>
-    <style>
-        * {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .ticket_code {
-            margin-bottom: 15px;
-        }
-    </style>
-
     <div>
         @foreach ($codes as $code)
-            <div class="ticket_code">
+            <div style="margin-bottom:15px;">
+                <div>QRCode: {{ \SimpleSoftwareIO\QrCode\Facades\QrCode::generate($code->code) }}</div>
                 <div>Ingresso: <b>{{ $code->ticket->description }} | {{ $code->code }}</b></div>
                 <div>Evento: <b>{{ $code->event->title }}</b></div>
                 <div>Data do Evento: <b>{{ \Carbon\Carbon::parse($code->event->date)->format('d/m/y') }}</b></div>
