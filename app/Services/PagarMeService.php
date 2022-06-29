@@ -19,7 +19,7 @@ class PagarMeService
         $tickets = [];
 
         foreach ($ticket as $selectedTicket) {
-            $total += (floatval($selectedTicket['value']) * $selectedTicket['quantity']);
+            $total += (($selectedTicket['value'] * 100) * $selectedTicket['quantity']);
         }
 
         $expiration_year = substr($card_info['card_expiration_year'], -2);
@@ -27,7 +27,7 @@ class PagarMeService
         $expiration_month = strlen($card_info['card_expiration_month']) === 1 ? "0{$card_info['card_expiration_month']}" : $card_info['card_expiration_month'];
 
         $data = [
-            'amount' => $total * 100,
+            'amount' => $total,
             'card_holder_name' => $card_info['card_name'],
             'card_expiration_date' => "{$expiration_month}{$expiration_year}", // MMAA
             'card_number' => (string) $card_info['card_number'],
