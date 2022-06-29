@@ -11,7 +11,7 @@
 <body>
     <div style="font-family: Roboto">
         <div style="text-align:center">
-            <h2>Olá! Agradecemos a aquisição dos ingressos. <br/> Aproveite ao máximo seu evento!</h2>
+            <h2 style="color:black;">Olá! Agradecemos a aquisição dos ingressos. <br/> Aproveite ao máximo seu evento!</h2>
             @foreach ($codes as $code)
                 <div style="margin-bottom:15px;">
                     <div><b>QRCode</b></div>
