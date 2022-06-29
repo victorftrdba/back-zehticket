@@ -73,13 +73,15 @@ class EventService {
         $pagarme = new PagarMeService;
 
         foreach ($request->tickets as $ticket) {
-            $infoTicket = Ticket::find($ticket['id']);
+            if ($ticket['quantity'] > 0) {
+                $infoTicket = Ticket::find($ticket['id']);
 
-            if ($infoTicket->amount === 0 || $ticket['amount'] > $infoTicket->amount) {
-                return [
-                    'error' => true,
-                    'message' => 'Ingressos esgotados ou insuficientes.'
-                ];
+                if ($infoTicket->amount === 0 || $ticket['amount'] > $infoTicket->amount) {
+                    return [
+                        'error' => true,
+                        'message' => 'Ingressos esgotados ou insuficientes.'
+                    ];
+                }
             }
         }
 
