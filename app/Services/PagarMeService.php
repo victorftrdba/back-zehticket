@@ -54,13 +54,13 @@ class PagarMeService
         $data['billing'] = [
             'name' => $user->name,
             'address' => [
-                'country' => 'BR',
+                'country' => 'br',
                 'street' => 'Não Informado',
-                'street_number' => 'Não Informado',
-                'state' => 'Não Informado',
-                'city' => 'Não Informado',
-                'neighborhood' => 'Não Informado',
-                'zipcode' => 'Não Informado'
+                'street_number' => '1811',
+                'state' => 'pr',
+                'city' => 'Sao Paulo',
+                'neighborhood' => 'Jardim Paulistano',
+                'zipcode' => '01451001'
             ]
         ];
 
