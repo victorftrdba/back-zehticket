@@ -20,7 +20,7 @@ class SendBoughtTicketsToUser extends Mailable
      */
     public function __construct(array $codes)
     {
-        $this->codes = $code;
+        $this->codes = $codes;
     }
 
     /**
