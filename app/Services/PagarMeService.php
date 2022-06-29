@@ -55,11 +55,11 @@ class PagarMeService
             'name' => $user->name,
             'address' => [
                 'country' => 'br',
-                'street' => 'Não Informado',
+                'street' => 'Rua Teste',
                 'street_number' => '1811',
                 'state' => 'pr',
                 'city' => 'Sao Paulo',
-                'neighborhood' => 'Jardim Paulistano',
+                'neighborhood' => 'Bairro Teste',
                 'zipcode' => '01451001'
             ]
         ];
