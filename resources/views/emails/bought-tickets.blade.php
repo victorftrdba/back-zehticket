@@ -14,7 +14,7 @@
             <div style="margin-bottom:15px;">
                 <div>QRCode:
                 <?php
-                    $qrCodeAsPng = QrCode::format('png')->size(500)->generate((string) $code->code);
+                    $qrCodeAsPng = QrCode::format('png')->size(500)->generate($code->code);
                 ?>
                 <img src="{!! $message->embedData($qrCodeAsPng, 'QRCode.png', 'image/png') !!}">
                 </div>
