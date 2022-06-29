@@ -19,12 +19,12 @@
                         $qrCodeAsPng = (string) QrCode::format('png')->margin(0)->size(200)->generate($code->code);
                     ?>
                     <img src="{!! $message->embedData($qrCodeAsPng, 'QrCode.png', 'image/png')!!}" style="margin-bottom:5px;">
-                    <div><b>INGRESSO</b></div>
-                    <div style="margin-bottom:5px;"><b>{{ $code->ticket->description }} | {{ $code->code }}</b></div>
-                    <div><b>EVENTO</b></div>
-                    <div style="margin-bottom:5px;"><b>{{ $code->event->title }}</b></div>
-                    <div><b>DATA DO EVENTO</b></div>
-                    <div><b>{{ \Carbon\Carbon::parse($code->event->date)->format('d/m/y') }}</b></div>
+                    <div><b style="color:black;">INGRESSO</b></div>
+                    <div style="margin-bottom:5px;"><b style="color:black;">{{ $code->ticket->description }} | {{ $code->code }}</b></div>
+                    <div><b style="color:black;">EVENTO</b></div>
+                    <div style="margin-bottom:5px;"><b style="color:black;">{{ $code->event->title }}</b></div>
+                    <div><b style="color:black;">DATA DO EVENTO</b></div>
+                    <div><b style="color:black;">{{ \Carbon\Carbon::parse($code->event->date)->format('d/m/y') }}</b></div>
                 </div>
             @endforeach
         </div>
