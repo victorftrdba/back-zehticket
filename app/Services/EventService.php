@@ -8,6 +8,8 @@ use App\Models\Payment;
 use App\Helpers\Constants;
 use App\Models\PaidTicket;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendBoughtTicketsToUser;
 
 class EventService {
     /**
