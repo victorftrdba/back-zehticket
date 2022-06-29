@@ -13,7 +13,8 @@
         @foreach ($codes as $code)
             <div style="margin-bottom:15px;">
                 <div>QRCode:
-                    <img src="{!! $message->embedData(QrCode::format('png')->generate($code->code), 'QrCode.png', 'image/png') !!}">
+                    <img
+                        src="{{ $message->embedData(QrCode::format('png')->generate($code->code), 'QrCode.png', 'image/png') }}">
                 </div>
                 <div>Ingresso: <b>{{ $code->ticket->description }} | {{ $code->code }}</b></div>
                 <div>Evento: <b>{{ $code->event->title }}</b></div>
