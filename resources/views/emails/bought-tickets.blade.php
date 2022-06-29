@@ -18,7 +18,7 @@
     </style>
 
     @foreach ($codes as $code)
-        {{ $code->code }}
+        @dd($code)
     @endforeach
 </body>
 
