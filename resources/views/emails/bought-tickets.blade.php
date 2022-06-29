@@ -14,9 +14,9 @@
             <div style="margin-bottom:15px;">
                 <div>QRCode:
                 <?php
-                    $qrCodeAsPng = (string) QrCode::format('png')->size(200)->encoding('UTF-8')->generate($code->code);
+                    $qrCodeAsPng = (string) QrCode::format('png')->margin(0)->size(200)->generate($code->code);
                 ?>
-                <img src="data:image/png;base64,{!! base64_encode($qrCodeAsPng) !!}">
+                <img src="{!! $message->embedData($qrCodeAsPng), 'QrCode.png', 'image/png')!!}">
                 </div>
                 <div>Ingresso: <b>{{ $code->ticket->description }} | {{ $code->code }}</b></div>
                 <div>Evento: <b>{{ $code->event->title }}</b></div>
