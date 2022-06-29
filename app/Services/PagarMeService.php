@@ -69,7 +69,7 @@ class PagarMeService
                 array_push($tickets, [
                     'id' => (string) $_selectedTicket['id'],
                     'title' => $_selectedTicket['description'],
-                    'unit_price' => ($_selectedTicket['total_value'] * 100),
+                    'unit_price' => ($_selectedTicket['value'] * 100),
                     'quantity' => $_selectedTicket['quantity'],
                     'tangible' => true
                 ]);
