@@ -66,13 +66,11 @@ class PagarMeService
 
         foreach ($ticket as $_selectedTicket) {
             array_push($tickets, [
-                [
-                    'id' => (string) $_selectedTicket['id'],
-                    'title' => $_selectedTicket['description'],
-                    'unit_price' => ($_selectedTicket['total_value'] * 100),
-                    'quantity' => $_selectedTicket['quantity'],
-                    'tangible' => true
-                ]
+                'id' => (string) $_selectedTicket['id'],
+                'title' => $_selectedTicket['description'],
+                'unit_price' => ($_selectedTicket['total_value'] * 100),
+                'quantity' => $_selectedTicket['quantity'],
+                'tangible' => true
             ]);
         }
 
