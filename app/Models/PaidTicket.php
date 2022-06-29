@@ -12,6 +12,7 @@ class PaidTicket extends Model
     protected $fillable = [
         'code',
         'event_id',
+        'ticket_id',
     ];
 
     public function event() {
