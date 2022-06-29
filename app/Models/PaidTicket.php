@@ -18,4 +18,8 @@ class PaidTicket extends Model
     public function event() {
         return $this->belongsTo(Event::class);
     }
+
+    public function ticket() {
+        return $this->belongsTo(Ticket::class);
+    }
 }
