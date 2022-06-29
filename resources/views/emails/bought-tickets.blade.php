@@ -18,7 +18,9 @@
     </style>
 
     @foreach ($codes as $code)
-        @dd($code)
+        @php
+            var_dump($code);
+        @endphp
     @endforeach
 </body>
 
