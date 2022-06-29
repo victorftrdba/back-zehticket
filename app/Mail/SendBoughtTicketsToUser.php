@@ -30,7 +30,7 @@ class SendBoughtTicketsToUser extends Mailable
      */
     public function build()
     {
-        return $this->from('nao-responder@zehticket.com.br', 'Ingressos comprados - Equipe ZehTicket')
+        return $this->from('equipe@zehticket.com.br', 'Ingressos comprados - Equipe ZehTicket')
         ->view('emails.bought-tickets');
     }
 }
