@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Models\Event;
+use App\Models\Ticket;
 use App\Models\Payment;
 use App\Helpers\Constants;
-use App\Models\Ticket;
+use App\Models\PaidTicket;
+use Illuminate\Support\Str;
 
 class EventService {
     /**
@@ -103,7 +105,18 @@ class EventService {
                 ]);
 
                 if ($pagarme->captureTransaction($credit_card['transaction_id'])->status === "paid") {
-                    $infoTicket->decrement('amount', $ticket['amount']);
+                    foreach ($request->tickets as $selectedTicket) {
+                        $boughtTicket = Ticket::find($selectedTicket['id']);
+                        $boughtTicket->decrement('amount', $selectedTicket['quantity']);
+
+                        for ($i = 0; $i < $selectedTicket['quantity']; $i++) {
+                            PaidTicket::create([
+                                'code' => Str::uuid(),
+                                'event_id' => $boughtTicket->event->id,
+                                'ticket_id' => $boughtTicket->id,
+                            ]);
+                        }
+                    }
                 };
                 break;
             case Constants::BOLETO:
