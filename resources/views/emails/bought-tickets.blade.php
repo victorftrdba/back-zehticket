@@ -13,7 +13,7 @@
         @foreach ($codes as $code)
             <div style="margin-bottom:15px;">
                 <div>QRCode:
-                    <img src="{{ QrCode::format('png')->generate($code->code) }}">
+                    {{ QrCode::format('png')->generate($code->code) }}
                 </div>
                 <div>Ingresso: <b>{{ $code->ticket->description }} | {{ $code->code }}</b></div>
                 <div>Evento: <b>{{ $code->event->title }}</b></div>
