@@ -9,15 +9,14 @@
 </head>
 
 <body>
-    <div>
+    <div style="display:flex;justify-content:center;align-items:center;flex-direction:column;">
         @foreach ($codes as $code)
             <div style="margin-bottom:15px;">
-                <div>QRCode:
+                <div>QRCode:</div>
                 <?php
                     $qrCodeAsPng = (string) QrCode::format('png')->margin(0)->size(200)->generate($code->code);
                 ?>
                 <img src="{!! $message->embedData($qrCodeAsPng, 'QrCode.png', 'image/png')!!}">
-                </div>
                 <div>Ingresso: <b>{{ $code->ticket->description }} | {{ $code->code }}</b></div>
                 <div>Evento: <b>{{ $code->event->title }}</b></div>
                 <div>Data do Evento: <b>{{ \Carbon\Carbon::parse($code->event->date)->format('d/m/y') }}</b></div>
