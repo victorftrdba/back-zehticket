@@ -16,6 +16,7 @@ class PagarMeService
     public function payWithCreditCard($user, $ticket, $card_info, $amount)
     {
         $total = 0;
+        $tickets = [];
 
         foreach ($ticket as $selectedTicket) {
             $total += (floatval($selectedTicket['value']) * $selectedTicket['quantity']);
@@ -64,16 +65,18 @@ class PagarMeService
         ];
 
         foreach ($ticket as $_selectedTicket) {
-            $data['items'] = [
+            array_push($tickets, [
                 [
                     'id' => (string) $_selectedTicket['id'],
                     'title' => $_selectedTicket['description'],
                     'unit_price' => ($_selectedTicket['total_value'] * 100),
-                    'quantity' => $_selectedTicket['amount'],
+                    'quantity' => $_selectedTicket['quantity'],
                     'tangible' => true
                 ]
-            ];
+            ]);
         }
+
+        $data['items'] = $tickets;
 
         $transaction = $this->pagarme->transactions()->create($data);
 
