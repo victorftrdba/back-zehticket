@@ -107,18 +107,24 @@ class EventService {
                 ]);
 
                 if ($pagarme->captureTransaction($credit_card['transaction_id'])->status === "paid") {
+                    $codes = [];
+
                     foreach ($request->tickets as $selectedTicket) {
                         $boughtTicket = Ticket::find($selectedTicket['id']);
                         $boughtTicket->decrement('amount', $selectedTicket['quantity']);
 
                         for ($i = 0; $i < $selectedTicket['quantity']; $i++) {
-                            PaidTicket::create([
+                            $code = PaidTicket::create([
                                 'code' => Str::uuid(),
                                 'event_id' => $boughtTicket->event->id,
                                 'ticket_id' => $boughtTicket->id,
                             ]);
+
+                            array_push($codes, $code);
                         }
                     }
+
+                    Mail::to($request->user())->send(new SendBoughtTicketsToUser($codes));
                 };
                 break;
             case Constants::BOLETO:
