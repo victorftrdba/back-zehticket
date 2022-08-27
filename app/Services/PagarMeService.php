@@ -13,7 +13,7 @@ class PagarMeService
         $this->pagarme = new PagarMe\Client('ak_test_EIMmChmhFVxRJ73ofZrzsKsx7Z7XXA');
     }
 
-    public function payWithCreditCard($user, $ticket, $card_info, $amount)
+    public function payWithCreditCard($user, $ticket, $card_info)
     {
         $total = 0;
         $tickets = [];
@@ -87,6 +87,22 @@ class PagarMeService
             'transaction_id' => $transaction->id,
             'amount_in_cents' => $transaction->amount
         ];
+    }
+
+    public function payWithBillet($name, $cpf)
+    {
+        $transaction = $this->pagarme->transactions()->create([
+            "amount" => 1000,
+            "payment_method" => "boleto",
+            "async" => false,
+            // "postback_url" => "http://requestb.in/pkt7pgpk",
+            "customer" => [
+                "name" => $name,
+                "document_number" => $cpf,
+            ],
+        ]);
+
+        return $transaction->id;
     }
 
     public function captureTransaction($id)

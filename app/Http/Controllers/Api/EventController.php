@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Services\EventService;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Event\StoreEventRequest;
+use App\Http\Requests\Event\BuyTicketEventRequest;
 
 class EventController extends Controller
 {
@@ -17,42 +19,25 @@ class EventController extends Controller
 
     public function findAll()
     {
-        $response = $this->eventService->findAll();
-
-        return $response;
+        return $this->eventService->findAll();
     }
 
     public function show($id)
     {
-        $response = $this->eventService->show($id);
-
-        return $response;
+        return $this->eventService->show($id);
     }
 
-    public function store(Request $request)
-    {
-        $this->authorize('2');
-
-        $response = $this->eventService->store($request);
-
-        return $response;
-    }
-
-    public function buyTicket(Request $request)
+    public function buyTicket(BuyTicketEventRequest $request)
     {
         $this->authorize('4');
 
-        $response = $this->eventService->buyTicket($request);
-
-        return $response;
+        return $this->eventService->buyTicket($request->validated());
     }
 
     public function showUserEvents(Request $request)
     {
         $this->authorize('5');
 
-        $response = $this->eventService->showUserEvents($request);
-
-        return $response;
+        return $this->eventService->showUserEvents($request);
     }
 }

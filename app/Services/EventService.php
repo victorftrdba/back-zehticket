@@ -8,133 +8,103 @@ use App\Models\Payment;
 use App\Helpers\Constants;
 use App\Models\PaidTicket;
 use Illuminate\Support\Str;
+use App\Services\PagarMeService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendBoughtTicketsToUser;
+use Illuminate\Http\JsonResponse;
 
 class EventService {
     /**
      * Mostra todos os eventos registrados com paginação
-     *
-     * @return array
      */
-    public function findAll()
+    public function findAll(): JsonResponse
     {
-        return Event::with(['user', 'tickets'])->paginate(15)->toArray();
-    }
+        $events = Event::with(['user', 'tickets'])->paginate(15);
 
-    public function show($id)
-    {
-        return Event::with('tickets')->find($id);
+        return response()->json($events);
     }
 
     /**
-     * Faz a criação de um novo evento
-     *
-     * @return array
+     * Mostra o evento selecionado pelo usuário
+     * @param mixed $id
      */
-    public function store($request)
+    public function show($id): JsonResponse
     {
-        $request->validate([
-            'title' => 'required|string',
-            'description' => 'required|string',
-            'value' => 'required',
-            'user_id' => 'required|integer',
-            'image' => 'required',
-            'date' => 'required|date',
-            'expires' => 'required|date',
-            'amount' => 'required|integer',
-        ]);
+        $event = Event::with('tickets')->find($id);
 
-        $event = Event::create($request->all());
-
-        return [
-            'success' => $event,
-        ];
+        return response()->json($event);
     }
 
     /**
      * Durante a compra do ticket é localizado a forma
      * de pagamento selecionado pelo cliente
-     *
-     * @return string[]
      */
-    public function buyTicket($request): Payment|array
+    public function buyTicket(array $data): JsonResponse
     {
-        $request->validate([
-            'payment_type' => 'required|integer',
-            'card_number' => 'integer',
-            'card_name' => 'string',
-            'card_cvc' => 'integer',
-            'card_expiration_month' => 'integer',
-            'card_expiration_year' => 'integer',
-            'tickets' => 'required|array',
-            'tickets.*.id' => 'required|integer',
-            'tickets.*.amount' => 'required|integer',
-        ]);
-
         $pagarme = new PagarMeService;
 
-        foreach ($request->tickets as $ticket) {
+        foreach ($data['tickets'] as $ticket) {
             if ($ticket['quantity'] > 0) {
                 $infoTicket = Ticket::find($ticket['id']);
 
                 if ($infoTicket->amount === 0 || $ticket['quantity'] > $infoTicket->amount) {
-                    return [
+                    return response()->json([
                         'error' => true,
                         'message' => 'Ingressos esgotados ou insuficientes.'
-                    ];
+                    ], 406);
                 }
             }
         }
 
-        switch ($request->payment_type) {
+        switch ($data['payment_type']) {
             case Constants::CARTAO_CREDITO:
                 $card_info = [
-                    'card_number' => $request->card_number,
-                    'card_name' => $request->card_name,
-                    'card_cvc' => $request->card_cvc,
-                    'card_expiration_month' => $request->card_expiration_month,
-                    'card_expiration_year' => $request->card_expiration_year,
+                    'card_number' => $data['card_number'],
+                    'card_name' => $data['card_name'],
+                    'card_cvc' => $data['card_cvc'],
+                    'card_expiration_month' => $data['card_expiration_month'],
+                    'card_expiration_year' => $data['card_expiration_year'],
                 ];
 
-                $credit_card = $pagarme->payWithCreditCard($request->user(), $request->tickets, $card_info, $ticket['amount']);
+                $credit_card = $pagarme->payWithCreditCard(Auth::user(), $data['tickets'], $card_info, $ticket['amount']);
 
                 $payment = Payment::create([
                     'total' => $credit_card['amount'],
                     'payment_type' => Constants::CARTAO_CREDITO,
                     'card_number' => $credit_card['last_digits'],
                     'receipt' => $credit_card['transaction_id'],
-                    'user_id' => $request->user()->id,
+                    'user_id' => Auth::user()->id,
                     'event_id' => $infoTicket->event->id,
                 ]);
 
                 if ($pagarme->captureTransaction($credit_card['transaction_id'])->status === "paid") {
                     $codes = [];
 
-                    foreach ($request->tickets as $selectedTicket) {
+                    foreach ($data['tickets'] as $selectedTicket) {
                         $boughtTicket = Ticket::find($selectedTicket['id']);
                         $boughtTicket->decrement('amount', $selectedTicket['quantity']);
 
                         for ($i = 0; $i < $selectedTicket['quantity']; $i++) {
-                            $code = PaidTicket::create([
+                            $codes[] = PaidTicket::create([
                                 'code' => Str::uuid(),
                                 'event_id' => $boughtTicket->event->id,
                                 'ticket_id' => $boughtTicket->id,
                             ]);
-
-                            array_push($codes, $code);
                         }
                     }
 
-                    Mail::to($request->user())->send(new SendBoughtTicketsToUser($codes));
+                    Mail::to(Auth::user())->send(new SendBoughtTicketsToUser($codes));
                 };
                 break;
             case Constants::BOLETO:
+                $billet = $pagarme->payWithBillet(Auth::user()->name, "11693743957");
+
                 $payment = Payment::create([
                     'total' => 500,
                     'payment_type' => Constants::BOLETO,
-                    'receipt' => 'sem integração com api por ora',
-                    'user_id' => $request->user_id,
+                    'receipt' => $billet,
+                    'user_id' => Auth::user()->id,
                     'event_id' => $infoTicket->event->id,
                 ]);
                 break;
@@ -143,7 +113,7 @@ class EventService {
                     'total' => 500,
                     'payment_type' => Constants::TRANSFERENCIA,
                     'receipt' => 'sem integração com api por ora',
-                    'user_id' => $request->user_id,
+                    'user_id' => Auth::user()->id,
                     'event_id' => $infoTicket->event->id,
                 ]);
                 break;
@@ -152,7 +122,7 @@ class EventService {
                     'total' => 500,
                     'payment_type' => Constants::PIX,
                     'receipt' => 'sem integração com api por ora',
-                    'user_id' => $request->user_id,
+                    'user_id' => Auth::user()->id,
                     'event_id' => $infoTicket->event->id,
                 ]);
                 break;
@@ -160,20 +130,19 @@ class EventService {
                 $payment = [
                     'error' => 'Nenhuma opção selecionada!',
                 ];
+                break;
         }
 
-        return $payment;
+        return response()->json($payment, 201);
     }
 
     /**
      * Mostra eventos do cliente
-     *
-     * @return events
      */
-    public function showUserEvents($request)
+    public function showUserEvents($request): JsonResponse
     {
-        $user = $request->user();
+        $paidEvents = Payment::whereId($request->user()->id)->with(['event'])->get();
 
-        return Payment::whereId($user->id)->with(['event'])->get();
+        return response()->json($paidEvents);
     }
 }

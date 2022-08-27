@@ -3,16 +3,15 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class UserService {
     /**
      * Recebe dados para logar
-     *
-     * @return token
      */
-    public function login($request)
+    public function login($request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email',
@@ -36,10 +35,8 @@ class UserService {
 
     /**
      * Recebe dados para realizar registro do usuário
-     *
-     * @return success
      */
-    public function register($request)
+    public function register($request): JsonResponse
     {
         $request->validate([
             'name' => 'required',
@@ -55,15 +52,13 @@ class UserService {
 
         $user->roles()->attach([2]);
 
-        return response()->json(['success' => $user]);
+        return response()->json(['success' => $user], 201);
     }
 
     /**
      * Realiza logout e limpeza dos tokens
-     *
-     * @return false
      */
-    public function logout($request)
+    public function logout($request): JsonResponse
     {
         $user = $request->user();
 
