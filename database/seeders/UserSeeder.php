@@ -24,7 +24,5 @@ class UserSeeder extends Seeder
 
         $user = User::create($developer);
         $user->roles()->attach([1]);
-
-        return true;
     }
 }

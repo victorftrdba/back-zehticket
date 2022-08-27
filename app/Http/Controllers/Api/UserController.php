@@ -19,29 +19,23 @@ class UserController extends Controller
     {
         $this->authorize('1');
 
-        return $request->user();
+        return response()->json($request->user());
     }
 
     public function login(Request $request)
     {
-        $response = $this->userService->login($request);
-
-        return $response;
+        return $this->userService->login($request);
     }
 
     public function register(Request $request)
     {
-        $response = $this->userService->register($request);
-
-        return $response;
+        return $this->userService->register($request);
     }
 
     public function logout(Request $request)
     {
         $this->authorize('3');
 
-        $response = $this->userService->logout($request);
-
-        return $response;
+        return $this->userService->logout($request);
     }
 }
