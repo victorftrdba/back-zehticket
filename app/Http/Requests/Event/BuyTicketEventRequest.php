@@ -34,6 +34,9 @@ class BuyTicketEventRequest extends FormRequest
             'tickets' => 'required|array',
             'tickets.*.id' => 'required|integer',
             'tickets.*.amount' => 'required|integer',
+            'tickets.*.quantity' => 'required|integer',
+            'tickets.*.value' => 'required',
+            'tickets.*.description' => 'required',
         ];
     }
 }
