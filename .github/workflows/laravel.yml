@@ -34,5 +34,5 @@ jobs:
         DB_PORT: 3306
         DB_DATABASE: wwzeht_db
         DB_USERNAME: wwzeht_root
-        DB_PASSWORD: @Nogueira2010
+        DB_PASSWORD: "@Nogueira2010"
       run: vendor/bin/phpunit
