@@ -30,6 +30,9 @@ jobs:
         touch database/database.sqlite
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
+        DB_HOST: 162.240.50.239
+        DB_PORT: 3306
+        DB_DATABASE: wwzeht_db
+        DB_USERNAME: wwzeht_root
+        DB_PASSWORD: @Nogueira2010
       run: vendor/bin/phpunit
