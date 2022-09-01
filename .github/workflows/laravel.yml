@@ -33,10 +33,7 @@ jobs:
           max_allowed_packet=16MB
           max_connections=50
           local_infile=1
-    - name: Sleep for 10s
-    - uses: juliangruber/sleep-action@v1
-      with:
-          time: 10s
+    - run: sleep 10
     - run: mysql -u 'developer' -password '123456' -h 127.0.0.1 -e 'CREATE DATABASE IF NOT EXISTS laravel;'
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
       with:
