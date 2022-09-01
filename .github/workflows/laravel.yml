@@ -25,6 +25,12 @@ jobs:
         mysql-version: 'mariadb-10.6'
         root-password: '123456'
         auto-start: true
+        my-cnf: |
+          innodb_log_file_size=256MB
+          innodb_buffer_pool_size=512MB
+          max_allowed_packet=16MB
+          max_connections=50
+          local_infile=1
     - run: sudo mysql -u root
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
       with:
