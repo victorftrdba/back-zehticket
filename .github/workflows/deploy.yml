@@ -21,7 +21,7 @@ jobs:
       - name: Install PHP with extensions
         run: sudo apt-get install -y php8.1-cli php8.1-dev php8.1-gd php8.1-pdo php8.1-mysql php8.1-intl php8.1-mbstring php8.1-redis php8.1-xml
       - name: Create .env
-        run: cp .env.ci .env
+        run: cp .env.example .env
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_PORT: 3306
