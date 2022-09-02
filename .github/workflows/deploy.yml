@@ -30,6 +30,9 @@ jobs:
         run: sudo php artisan optimize:clear
       - name: Generate key
         run: sudo php artisan key:generate
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
       - name: FTP Deployment
         uses: airvzxf/ftp-deployment-action@latest
         with:
