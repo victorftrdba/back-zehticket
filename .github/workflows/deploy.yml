@@ -21,19 +21,7 @@ jobs:
       - name: Install PHP with extensions
         run: sudo apt-get install -y php8.1-cli php8.1-dev php8.1-gd php8.1-pdo php8.1-mysql php8.1-intl php8.1-mbstring php8.1-redis php8.1-xml
       - name: Create .env
-        run: cp .env.example .env
-        env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: 3306
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          MAIL_MAILER: smtp
-          MAIL_HOST: mail.zehticket.com.br
-          MAIL_PORT: 465
-          MAIL_USERNAME: 'equipe@zehticket.com.br'
-          MAIL_PASSWORD: 'B-RI9m!dLVd_'
-          MAIL_ENCRYPTION: ssl
+        run: cp .env.ci .env
       - name: Install Composer
         run: sudo php -r "readfile('http://getcomposer.org/installer');" | sudo php -- --install-dir=./ --filename=composer
       - name: Install dependencies
