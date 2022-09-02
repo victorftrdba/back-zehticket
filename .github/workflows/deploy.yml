@@ -32,7 +32,7 @@ jobs:
         run: sudo php artisan key:generate
       - name: Starting unit tests
         run: sudo php artisan test
-  build:
+  deploy:
     runs-on: ubuntu-22.04
     steps:
       - name: Installing Actions
