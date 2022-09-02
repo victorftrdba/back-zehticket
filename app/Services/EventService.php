@@ -67,7 +67,7 @@ class EventService {
                     'card_expiration_year' => $data['card_expiration_year'],
                 ];
 
-                $credit_card = $pagarme->payWithCreditCard(Auth::user(), $data['tickets'], $card_info, $ticket['amount']);
+                $credit_card = $pagarme->payWithCreditCard(Auth::user(), $data['tickets'], $card_info, (string) $data['cpf'], $data['address']);
 
                 $payment = Payment::create([
                     'total' => $credit_card['amount'],
@@ -98,15 +98,25 @@ class EventService {
                 };
                 break;
             case Constants::BOLETO:
-                $billet = $pagarme->payWithBillet(Auth::user()->name, "11693743957");
+                $billet = $pagarme->payWithBillet(Auth::user()->name, (string) $data['cpf'], $data['tickets']);
 
                 $payment = Payment::create([
                     'total' => 500,
                     'payment_type' => Constants::BOLETO,
-                    'receipt' => $billet,
+                    'receipt' => $billet->id,
                     'user_id' => Auth::user()->id,
                     'event_id' => $infoTicket->event->id,
                 ]);
+
+                $payment = [
+                    'total' => 500,
+                    'payment_type' => Constants::BOLETO,
+                    'receipt' => $billet->id,
+                    'user_id' => Auth::user()->id,
+                    'event_id' => $infoTicket->event->id,
+                    'payment_id' => $payment->id,
+                    'url' => $billet->url,
+                ];
                 break;
             case Constants::TRANSFERENCIA:
                 $payment = Payment::create([
