@@ -38,4 +38,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local_dir: ./
           remote_dir: /api.zehticket.com.br
-          delete: true
+          delete: false
