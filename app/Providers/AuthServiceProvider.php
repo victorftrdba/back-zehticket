@@ -29,7 +29,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        if (Schema::hasTable('permissiones')) {
+        if (Schema::hasTable('permissions')) {
             $permissions = Permission::with('roles')->get();
 
             foreach ($permissions as $permission) {
