@@ -98,7 +98,7 @@ class EventService {
                 };
                 break;
             case Constants::BOLETO:
-                $billet = $pagarme->payWithBillet(Auth::user()->name, (string) $data['cpf'], $data['tickets']);
+                $billet = $pagarme->payWithBillet($data['tickets']);
 
                 $payment = Payment::create([
                     'total' => 500,

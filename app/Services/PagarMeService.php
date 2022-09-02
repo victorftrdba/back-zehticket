@@ -81,7 +81,7 @@ class PagarMeService
         ];
     }
 
-    public function payWithBillet($name, $cpf, $ticket)
+    public function payWithBillet($ticket)
     {
         $total = 0;
         $tickets = [];
@@ -118,16 +118,6 @@ class PagarMeService
                     'max_installments' => 12
                 ],
                 'default_payment_method' => 'boleto'
-            ],
-            "customer" => [
-                "name" => $name,
-                'type' => 'individual',
-                'documents' => [
-                    [
-                        'type' => 'cpf',
-                        'number' => $cpf
-                    ]
-                ],
             ],
             'items' => $tickets,
         ]);
