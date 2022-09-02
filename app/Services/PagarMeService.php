@@ -13,7 +13,7 @@ class PagarMeService
         $this->pagarme = new PagarMe\Client('ak_test_EIMmChmhFVxRJ73ofZrzsKsx7Z7XXA');
     }
 
-    public function payWithCreditCard($user, $ticket, $card_info)
+    public function payWithCreditCard($user, $ticket, $card_info, $cpf, $address)
     {
         $total = 0;
         $tickets = [];
@@ -45,7 +45,7 @@ class PagarMeService
             'documents' => [
                 [
                     'type' => 'cpf',
-                    'number' => '67415765095'
+                    'number' => $cpf
                 ]
             ],
             'phone_numbers' => [ '+551199999999' ]
@@ -53,15 +53,7 @@ class PagarMeService
 
         $data['billing'] = [
             'name' => $user->name,
-            'address' => [
-                'country' => 'br',
-                'street' => 'Rua Teste',
-                'street_number' => '1811',
-                'state' => 'pr',
-                'city' => 'Sao Paulo',
-                'neighborhood' => 'Bairro Teste',
-                'zipcode' => '01451001'
-            ]
+            'address' => $address
         ];
 
         foreach ($ticket as $_selectedTicket) {
@@ -89,20 +81,58 @@ class PagarMeService
         ];
     }
 
-    public function payWithBillet($name, $cpf)
+    public function payWithBillet($name, $cpf, $ticket)
     {
-        $transaction = $this->pagarme->transactions()->create([
-            "amount" => 1000,
+        $total = 0;
+        $tickets = [];
+
+        foreach ($ticket as $selectedTicket) {
+            $total += (($selectedTicket['value'] * 100) * $selectedTicket['quantity']);
+        }
+
+        foreach ($ticket as $_selectedTicket) {
+            if ($_selectedTicket['quantity'] > 0) {
+                array_push($tickets, [
+                    'id' => (string) $_selectedTicket['id'],
+                    'title' => $_selectedTicket['description'],
+                    'unit_price' => ($_selectedTicket['value'] * 100),
+                    'quantity' => $_selectedTicket['quantity'],
+                    'tangible' => true,
+                ]);
+            }
+        }
+
+        $transaction = $this->pagarme->paymentLinks()->create([
+            "amount" => $total,
             "payment_method" => "boleto",
             "async" => false,
-            // "postback_url" => "http://requestb.in/pkt7pgpk",
+            'payment_config' => [
+                'boleto' => [
+                    'enabled' => true,
+                    'expires_in' => 20
+                ],
+                'credit_card' => [
+                    'enabled' => false,
+                    'free_installments' => 4,
+                    'interest_rate' => 25,
+                    'max_installments' => 12
+                ],
+                'default_payment_method' => 'boleto'
+            ],
             "customer" => [
                 "name" => $name,
-                "document_number" => $cpf,
+                'type' => 'individual',
+                'documents' => [
+                    [
+                        'type' => 'cpf',
+                        'number' => $cpf
+                    ]
+                ],
             ],
+            'items' => $tickets,
         ]);
 
-        return $transaction->id;
+        return $transaction;
     }
 
     public function captureTransaction($id)
