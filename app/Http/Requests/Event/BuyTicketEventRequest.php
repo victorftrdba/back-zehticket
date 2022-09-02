@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\Event;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Helpers\Constants;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Http\FormRequest;
 
 class BuyTicketEventRequest extends FormRequest
 {
@@ -25,12 +26,12 @@ class BuyTicketEventRequest extends FormRequest
     public function rules()
     {
         return [
-            'payment_type' => 'required|integer',
-            'card_number' => 'integer',
-            'card_name' => 'string',
-            'card_cvc' => 'integer',
-            'card_expiration_month' => 'integer',
-            'card_expiration_year' => 'integer',
+            'payment_type' => ['required', 'integer'],
+            'card_number' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'integer'],
+            'card_name' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO,  'string'],
+            'card_cvc' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'integer'],
+            'card_expiration_month' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'integer'],
+            'card_expiration_year' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'integer'],
             'tickets' => 'required|array',
             'tickets.*.id' => 'required|integer',
             'tickets.*.amount' => 'required|integer',
