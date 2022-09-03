@@ -171,8 +171,12 @@ class PagarMeService
 
     public function captureTransaction($id)
     {
-        return $this->pagarme->transactions()->get([
-            'id' => (string) $id
-        ]);
+        try {
+            return $this->pagarme->transactions()->get([
+                'id' => (string) $id
+            ]);
+        } catch (\Exception) {
+            return null;
+        }
     }
 }

@@ -77,25 +77,6 @@ class EventService {
                     'user_id' => Auth::user()->id,
                     'event_id' => $infoTicket->event->id,
                 ]);
-
-                if ($pagarme->captureTransaction($credit_card['transaction_id'])->status === "paid") {
-                    $codes = [];
-
-                    foreach ($data['tickets'] as $selectedTicket) {
-                        $boughtTicket = Ticket::find($selectedTicket['id']);
-                        $boughtTicket->decrement('amount', $selectedTicket['quantity']);
-
-                        for ($i = 0; $i < $selectedTicket['quantity']; $i++) {
-                            $codes[] = PaidTicket::create([
-                                'code' => Str::uuid(),
-                                'event_id' => $boughtTicket->event->id,
-                                'ticket_id' => $boughtTicket->id,
-                            ]);
-                        }
-                    }
-
-                    Mail::to(Auth::user())->send(new SendBoughtTicketsToUser($codes));
-                };
                 break;
             case Constants::BOLETO:
                 $billet = $pagarme->payWithBillet($data['tickets']);
