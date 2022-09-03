@@ -128,13 +128,25 @@ class EventService {
                 ]);
                 break;
             case Constants::PIX:
+                $pix = $pagarme->payWithPix($data['tickets']);
+
                 $payment = Payment::create([
                     'total' => 500,
                     'payment_type' => Constants::PIX,
-                    'receipt' => 'sem integração com api por ora',
+                    'receipt' => $pix->id,
                     'user_id' => Auth::user()->id,
                     'event_id' => $infoTicket->event->id,
                 ]);
+
+                $payment = [
+                    'total' => 500,
+                    'payment_type' => Constants::PIX,
+                    'receipt' => $pix->id,
+                    'user_id' => Auth::user()->id,
+                    'event_id' => $infoTicket->event->id,
+                    'payment_id' => $payment->id,
+                    'url' => $pix->url,
+                ];
                 break;
             default:
                 $payment = [

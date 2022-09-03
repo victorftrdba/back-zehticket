@@ -125,6 +125,50 @@ class PagarMeService
         return $transaction;
     }
 
+    public function payWithPix($ticket)
+    {
+        $total = 0;
+        $tickets = [];
+
+        foreach ($ticket as $selectedTicket) {
+            $total += (($selectedTicket['value'] * 100) * $selectedTicket['quantity']);
+        }
+
+        foreach ($ticket as $_selectedTicket) {
+            if ($_selectedTicket['quantity'] > 0) {
+                array_push($tickets, [
+                    'id' => (string) $_selectedTicket['id'],
+                    'title' => $_selectedTicket['description'],
+                    'unit_price' => ($_selectedTicket['value'] * 100),
+                    'quantity' => $_selectedTicket['quantity'],
+                    'tangible' => true,
+                ]);
+            }
+        }
+
+        $transaction = $this->pagarme->paymentLinks()->create([
+            "amount" => $total,
+            "payment_method" => "pix",
+            "async" => false,
+            'payment_config' => [
+                'pix' => [
+                    'enabled' => true,
+                    'expiration_date' => now()->addDay()
+                ],
+                'credit_card' => [
+                    'enabled' => false,
+                    'free_installments' => 4,
+                    'interest_rate' => 25,
+                    'max_installments' => 12
+                ],
+                'default_payment_method' => 'pix'
+            ],
+            'items' => $tickets,
+        ]);
+
+        return $transaction;
+    }
+
     public function captureTransaction($id)
     {
         return $this->pagarme->transactions()->get([
