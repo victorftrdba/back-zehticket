@@ -2,15 +2,17 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Http;
 use PagarMe;
 
 class PagarMeService
 {
     public $pagarme;
+    public $key = 'ak_test_EIMmChmhFVxRJ73ofZrzsKsx7Z7XXA';
 
     public function __construct()
     {
-        $this->pagarme = new PagarMe\Client('ak_test_EIMmChmhFVxRJ73ofZrzsKsx7Z7XXA');
+        $this->pagarme = new PagarMe\Client($this->key);
     }
 
     public function payWithCreditCard($user, $ticket, $card_info, $cpf, $address)
@@ -178,5 +180,19 @@ class PagarMeService
         } catch (\Exception) {
             return null;
         }
+    }
+
+    public function captureTransactionLink($id)
+    {
+        $response = Http::get('https://api.pagar.me/1/orders', [
+            'api_key' => $this->key,
+            'payment_link_id' => $id,
+        ]);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return null;
     }
 }
