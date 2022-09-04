@@ -44,7 +44,7 @@ class VerifyPaidBilletAndPixCommand extends Command
             $user = User::find($payment->user_id);
 
             if (!is_null($transaction) && $payment->payment_type === Constants::CARTAO_CREDITO) {
-                if ($transaction->date_updated >= now()->subDay() && $transaction->status === 'paid') {
+                if ($transaction->date_updated >= now()->addHours(3) && $transaction->status === 'paid') {
                     collect($transaction->items)->map(function ($item) use ($codes, $user) {
                         $boughtTicket = Ticket::find($item->id);
                         $boughtTicket->decrement('amount', $item->quantity);
@@ -64,7 +64,7 @@ class VerifyPaidBilletAndPixCommand extends Command
 
             if (!is_null($transactionLink) && in_array($payment->payment_type, [Constants::BOLETO, Constants::PIX])) {
                 foreach ($transactionLink as $infoTransaction) {
-                    if ($infoTransaction['date_created'] >= now()->subDay() && $infoTransaction['status'] === 'paid') {
+                    if ($infoTransaction['date_created'] >= now()->addHours(3) && $infoTransaction['status'] === 'paid') {
                         collect($infoTransaction['items'])->map(function ($infoTransactionItem) use ($codes, $user) {
                             $boughtTicket = Ticket::find($infoTransactionItem['id']);
                             $boughtTicket->decrement('amount', $infoTransactionItem['id']);
