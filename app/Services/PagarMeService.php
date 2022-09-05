@@ -34,8 +34,8 @@ class PagarMeService
             'amount' => $total,
             'card_holder_name' => $card_info['card_name'],
             'card_expiration_date' => "{$expiration_month}{$expiration_year}", // MMAA
-            'card_number' => (string) $card_info['card_number'],
-            'card_cvv' => (string) $card_info['card_cvc'],
+            'card_number' => $card_info['card_number'],
+            'card_cvv' => $card_info['card_cvc'],
             'payment_method' => 'credit_card',
             // 'postback_url' => 'http://requestb.in/pkt7pgpk',
         ];

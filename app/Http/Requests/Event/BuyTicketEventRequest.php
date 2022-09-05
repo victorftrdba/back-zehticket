@@ -27,12 +27,12 @@ class BuyTicketEventRequest extends FormRequest
     {
         return [
             'payment_type' => ['required', 'integer'],
-            'card_number' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'integer'],
+            'card_number' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'string'],
             'card_name' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO,  'string'],
-            'card_cvc' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'integer'],
-            'card_expiration_month' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'integer'],
-            'card_expiration_year' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'integer'],
-            'cpf' => ['required_unless:payment_type,'.Constants::BOLETO.','.Constants::PIX, 'integer'],
+            'card_cvc' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'string'],
+            'card_expiration_month' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'string'],
+            'card_expiration_year' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'string'],
+            'cpf' => ['required_unless:payment_type,'.Constants::BOLETO.','.Constants::PIX, 'string'],
             'address' => ['required_unless:payment_type,'.Constants::BOLETO.','.Constants::PIX, 'array'],
             'address.country' => ['required_unless:payment_type,'.Constants::BOLETO.','.Constants::PIX, 'string'],
             'address.street' => ['required_unless:payment_type,'.Constants::BOLETO.','.Constants::PIX, 'string'],

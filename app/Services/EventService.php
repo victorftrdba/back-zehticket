@@ -71,7 +71,7 @@ class EventService {
                     'card_expiration_year' => $data['card_expiration_year'],
                 ];
 
-                $credit_card = $pagarme->payWithCreditCard(Auth::user(), $data['tickets'], $card_info, (string) $data['cpf'], $data['address']);
+                $credit_card = $pagarme->payWithCreditCard(Auth::user(), $data['tickets'], $card_info, $data['cpf'], $data['address']);
 
                 $payment = Payment::create([
                     'total' => $credit_card['amount'],
