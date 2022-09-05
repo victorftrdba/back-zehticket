@@ -29,9 +29,13 @@ class EventService {
      * Mostra o evento selecionado pelo usuário
      * @param mixed $id
      */
-    public function show($id): JsonResponse
+    public function show($search, $id): JsonResponse
     {
-        $event = Event::with('tickets')->find($id);
+        $event = Event::with('tickets')
+            ->when($search, function ($query, $value) {
+                return $query->where('title', 'LIKE', "%{$value}%");
+            })
+            ->find($id);
 
         return response()->json($event);
     }

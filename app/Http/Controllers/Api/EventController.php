@@ -22,9 +22,9 @@ class EventController extends Controller
         return $this->eventService->findAll();
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return $this->eventService->show($id);
+        return $this->eventService->show($request->input('search'), $id);
     }
 
     public function buyTicket(BuyTicketEventRequest $request)
