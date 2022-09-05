@@ -5,12 +5,13 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ForceJsonRequest
 {
     public function handle(Request $request, Closure $next): JsonResponse
     {
-        if ($request->headers->get('Accept') === 'application/json') {
+        if (Str::contains($request->headers->get('Accept'), 'application/json')) {
             return $next($request);
         }
 
