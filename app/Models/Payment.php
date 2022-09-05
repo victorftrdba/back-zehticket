@@ -16,6 +16,7 @@ class Payment extends Model
         'receipt',
         'user_id',
         'event_id',
+        'paid',
     ];
 
     protected $dates = [

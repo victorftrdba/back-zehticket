@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendBoughtTicketsToUser;
 use App\Models\User;
+use Carbon\Carbon;
 
 class VerifyPaidBilletAndPixCommand extends Command
 {
@@ -37,34 +38,36 @@ class VerifyPaidBilletAndPixCommand extends Command
      */
     public function handle()
     {
-        Payment::with('event')->whereNotNull('receipt')->orderBy('created_at', 'DESC')->get()->map(function ($payment) {
+        Payment::with('event')->wherePaid(false)->whereNotNull('receipt')->orderBy('created_at', 'DESC')->get()->map(function ($payment) {
             $codes = [];
             $transaction = (new PagarMeService)->captureTransaction($payment->receipt);
             $transactionLink = (new PagarMeService)->captureTransactionLink($payment->receipt);
             $user = User::find($payment->user_id);
 
-            if (!is_null($transaction) && $payment->payment_type === Constants::CARTAO_CREDITO) {
-                if ($transaction->date_updated >= now()->addHours(3) && $transaction->status === 'paid') {
-                    collect($transaction->items)->map(function ($item) use ($codes, $user) {
-                        $boughtTicket = Ticket::find($item->id);
-                        $boughtTicket->decrement('amount', $item->quantity);
+            if ($payment->payment_type === Constants::CARTAO_CREDITO && $transaction->status === 'paid') {
+                collect($transaction->items)->map(function ($item) use ($codes, $user) {
+                    $boughtTicket = Ticket::find($item->id);
+                    $boughtTicket->decrement('amount', $item->quantity);
 
-                        for ($i = 0; $i < $item->quantity; $i++) {
-                            $codes[] = PaidTicket::create([
-                                'code' => Str::uuid(),
-                                'event_id' => $boughtTicket->event->id,
-                                'ticket_id' => $boughtTicket->id,
-                            ]);
-                        }
+                    for ($i = 0; $i < $item->quantity; $i++) {
+                        $codes[] = PaidTicket::create([
+                            'code' => Str::uuid(),
+                            'event_id' => $boughtTicket->event->id,
+                            'ticket_id' => $boughtTicket->id,
+                        ]);
+                    }
 
-                        Mail::to($user)->send(new SendBoughtTicketsToUser($codes));
-                    });
-                }
+                    Mail::to($user)->send(new SendBoughtTicketsToUser($codes));
+                });
+
+                $payment->update([
+                    'paid' => true
+                ]);
             }
 
-            if (!is_null($transactionLink) && in_array($payment->payment_type, [Constants::BOLETO, Constants::PIX])) {
+            if (in_array($payment->payment_type, [Constants::BOLETO, Constants::PIX])) {
                 foreach ($transactionLink as $infoTransaction) {
-                    if ($infoTransaction['date_created'] >= now()->addHours(3) && $infoTransaction['status'] === 'paid') {
+                    if ($infoTransaction['status'] === 'paid') {
                         collect($infoTransaction['items'])->map(function ($infoTransactionItem) use ($codes, $user) {
                             $boughtTicket = Ticket::find($infoTransactionItem['id']);
                             $boughtTicket->decrement('amount', $infoTransactionItem['id']);
@@ -79,6 +82,10 @@ class VerifyPaidBilletAndPixCommand extends Command
 
                             Mail::to($user)->send(new SendBoughtTicketsToUser($codes));
                         });
+
+                        $payment->update([
+                            'paid' => true
+                        ]);
                     }
                 }
             }
