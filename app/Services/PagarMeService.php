@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Ticket;
 use Illuminate\Support\Facades\Http;
 use PagarMe;
 
@@ -21,7 +22,8 @@ class PagarMeService
         $tickets = [];
 
         foreach ($ticket as $selectedTicket) {
-            $total += (($selectedTicket['value'] * 100) * $selectedTicket['quantity']);
+            $value = Ticket::find($selectedTicket['id'])->value;
+            $total += (($value * 100) * $selectedTicket['quantity']);
         }
 
         $expiration_year = substr($card_info['card_expiration_year'], -2);
@@ -60,10 +62,11 @@ class PagarMeService
 
         foreach ($ticket as $_selectedTicket) {
             if ($_selectedTicket['quantity'] > 0) {
+                $_value = Ticket::find($selectedTicket['id'])->value;
                 array_push($tickets, [
                     'id' => (string) $_selectedTicket['id'],
                     'title' => $_selectedTicket['description'],
-                    'unit_price' => ($_selectedTicket['value'] * 100),
+                    'unit_price' => ($_value * 100),
                     'quantity' => $_selectedTicket['quantity'],
                     'tangible' => true
                 ]);
