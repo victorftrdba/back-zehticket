@@ -120,12 +120,9 @@ class EventService
         return response()->json($payment, 201);
     }
 
-    /**
-     * Mostra eventos do cliente
-     */
     public function showUserEvents($user): JsonResponse
     {
-        $paidEvents = Payment::whereId($user->id)->with(['event'])->get();
+        $paidEvents = $user->payments()->with('event')->get();
 
         return response()->json($paidEvents);
     }

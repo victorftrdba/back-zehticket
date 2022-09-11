@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -42,20 +44,25 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    public function roles()
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class);
     }
 
-    public function hasPermission(Permission $permission)
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function hasPermission(Permission $permission): bool
     {
         return $this->hasAnyRoles($permission->roles);
     }
 
-    public function hasAnyRoles($roles)
+    public function hasAnyRoles($roles): bool
     {
         if (is_array($roles) || is_object($roles)) {
-            return !! $roles->intersect($this->roles)->count();
+            return !!$roles->intersect($this->roles)->count();
         }
 
         return $this->roles->contains('id', $roles);

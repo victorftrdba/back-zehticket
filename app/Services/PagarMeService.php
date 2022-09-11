@@ -10,12 +10,12 @@ use PagarMe;
 
 class PagarMeService
 {
-    public PagarMe\Client $pagarme;
+    public PagarMe\Client $pagarMe;
     public string $key = 'ak_test_EIMmChmhFVxRJ73ofZrzsKsx7Z7XXA';
 
     public function __construct()
     {
-        $this->pagarme = new PagarMe\Client($this->key);
+        $this->pagarMe = new PagarMe\Client($this->key);
     }
 
     public function payWithCreditCard($user, $ticket, $card_info, $cpf, $address): array
@@ -77,7 +77,7 @@ class PagarMeService
 
         $data['items'] = $tickets;
 
-        $transaction = $this->pagarme->transactions()->create($data);
+        $transaction = $this->pagarMe->transactions()->create($data);
 
         return [
             'status' => $transaction->status,
@@ -109,7 +109,7 @@ class PagarMeService
             }
         }
 
-        return $this->pagarme->paymentLinks()->create([
+        return $this->pagarMe->paymentLinks()->create([
             "amount" => $total,
             "payment_method" => "boleto",
             "async" => false,
@@ -151,7 +151,7 @@ class PagarMeService
             }
         }
 
-        return $this->pagarme->paymentLinks()->create([
+        return $this->pagarMe->paymentLinks()->create([
             "amount" => $total,
             "payment_method" => "pix",
             "async" => false,
@@ -175,7 +175,7 @@ class PagarMeService
     public function captureTransaction($id): ?ArrayObject
     {
         try {
-            return $this->pagarme->transactions()->get([
+            return $this->pagarMe->transactions()->get([
                 'id' => (string)$id
             ]);
         } catch (Exception) {

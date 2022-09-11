@@ -7,9 +7,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class UserService {
-    /**
-     * Recebe dados para logar
-     */
     public function login(array $data): JsonResponse
     {
         $user = User::where('email', $data['email'])->first();
@@ -25,9 +22,6 @@ class UserService {
         ], 401);
     }
 
-    /**
-     * Recebe dados para realizar registro do usuário
-     */
     public function register(array $data): JsonResponse
     {
         $user = User::create($data);
@@ -37,9 +31,6 @@ class UserService {
         return response()->json(['success' => $user], 201);
     }
 
-    /**
-     * Realiza logout e limpeza dos tokens
-     */
     public function logout($user): JsonResponse
     {
         $user->tokens()->delete();
