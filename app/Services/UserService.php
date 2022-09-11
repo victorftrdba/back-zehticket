@@ -4,51 +4,33 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class UserService {
     /**
      * Recebe dados para logar
      */
-    public function login($request): JsonResponse
+    public function login(array $data): JsonResponse
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $user = User::where('email', $data['email'])->first();
 
-        $user = User::where('email', $request->email)->first();
-
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => [
-                    'Dados incorretos.'
-                ],
+        if (Auth::attempt($data)) {
+            return response()->json([
+                'token' => $user->createToken($user->name)->plainTextToken,
             ]);
         }
 
         return response()->json([
-            'token' => $user->createToken($user->name)->plainTextToken,
-        ]);
+            'error' => 'Autenticação com erro.',
+        ], 401);
     }
 
     /**
      * Recebe dados para realizar registro do usuário
      */
-    public function register($request): JsonResponse
+    public function register(array $data): JsonResponse
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $user = User::create($data);
 
         $user->roles()->attach([2]);
 
@@ -58,10 +40,8 @@ class UserService {
     /**
      * Realiza logout e limpeza dos tokens
      */
-    public function logout($request): JsonResponse
+    public function logout($user): JsonResponse
     {
-        $user = $request->user();
-
         $user->tokens()->delete();
 
         return response()->json(['logged' => false]);
