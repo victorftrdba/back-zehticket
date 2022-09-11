@@ -2,13 +2,13 @@
 
 namespace App\Providers;
 
-use App\Models\User;
 use App\Models\Permission;
+use App\Models\User;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 
 class AuthServiceProvider extends ServiceProvider
@@ -27,7 +27,7 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->registerPolicies();
 

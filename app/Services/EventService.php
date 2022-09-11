@@ -2,19 +2,15 @@
 
 namespace App\Services;
 
-use App\Models\Event;
-use App\Models\Ticket;
-use App\Models\Payment;
 use App\Helpers\Constants;
-use App\Models\PaidTicket;
-use Illuminate\Support\Str;
-use App\Services\PagarMeService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\SendBoughtTicketsToUser;
+use App\Models\Event;
+use App\Models\Payment;
+use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
-class EventService {
+class EventService
+{
     /**
      * Mostra todos os eventos registrados com paginação
      */
@@ -29,7 +25,7 @@ class EventService {
      * Mostra o evento selecionado pelo usuário
      * @param mixed $id
      */
-    public function show($search, $id): JsonResponse
+    public function show(string $search, int $id): JsonResponse
     {
         $event = Event::with('tickets')
             ->when($search, function ($query, $value) {
@@ -147,9 +143,9 @@ class EventService {
     /**
      * Mostra eventos do cliente
      */
-    public function showUserEvents($request): JsonResponse
+    public function showUserEvents($user): JsonResponse
     {
-        $paidEvents = Payment::whereId($request->user()->id)->with(['event'])->get();
+        $paidEvents = Payment::whereId($user->id)->with(['event'])->get();
 
         return response()->json($paidEvents);
     }
