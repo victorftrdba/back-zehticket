@@ -37,7 +37,7 @@ class PagarMeService
             'card_holder_name' => $card_info['card_name'],
             'card_expiration_date' => "{$expiration_month}{$expiration_year}", // MMAA
             'card_number' => $card_info['card_number'],
-            'card_cvv' => $card_info['card_cvc'],
+            'card_cvv' => $card_info['card_cvv'],
             'payment_method' => 'credit_card',
             'installments' => $card_info['installments'],
         ];

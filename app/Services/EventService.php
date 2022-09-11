@@ -62,7 +62,7 @@ class EventService
                 $card_info = [
                     'card_number' => $data['card_number'],
                     'card_name' => $data['card_name'],
-                    'card_cvc' => $data['card_cvc'],
+                    'card_cvv' => $data['card_cvv'],
                     'card_expiration_month' => $data['card_expiration_month'],
                     'card_expiration_year' => $data['card_expiration_year'],
                     'installments' => $data['installments'],
