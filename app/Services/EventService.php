@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class EventService
 {
-    /**
-     * Mostra todos os eventos registrados com paginação
-     */
     public function findAll(): JsonResponse
     {
         $events = Event::with(['user', 'tickets'])->paginate(15);
@@ -21,11 +18,7 @@ class EventService
         return response()->json($events);
     }
 
-    /**
-     * Mostra o evento selecionado pelo usuário
-     * @param mixed $id
-     */
-    public function show(string $search, int $id): JsonResponse
+    public function show(?string $search, int $id): JsonResponse
     {
         $event = Event::with('tickets')
             ->when($search, function ($query, $value) {
@@ -36,10 +29,6 @@ class EventService
         return response()->json($event);
     }
 
-    /**
-     * Durante a compra do ticket é localizado a forma
-     * de pagamento selecionado pelo cliente
-     */
     public function buyTicket(array $data): JsonResponse
     {
         $pagarme = new PagarMeService;
@@ -99,15 +88,6 @@ class EventService
                     'payment_id' => $payment->id,
                     'url' => $billet->url,
                 ];
-                break;
-            case Constants::TRANSFERENCIA:
-                $payment = Payment::create([
-                    'total' => 500,
-                    'payment_type' => Constants::TRANSFERENCIA,
-                    'receipt' => 'sem integração com api por ora',
-                    'user_id' => Auth::user()->id,
-                    'event_id' => $infoTicket->event->id,
-                ]);
                 break;
             case Constants::PIX:
                 $pix = $pagarme->payWithPix($data['tickets']);
