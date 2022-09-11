@@ -3,20 +3,22 @@
 namespace App\Services;
 
 use App\Models\Ticket;
+use ArrayObject;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use PagarMe;
 
 class PagarMeService
 {
-    public $pagarme;
-    public $key = 'ak_test_EIMmChmhFVxRJ73ofZrzsKsx7Z7XXA';
+    public PagarMe\Client $pagarme;
+    public string $key = 'ak_test_EIMmChmhFVxRJ73ofZrzsKsx7Z7XXA';
 
     public function __construct()
     {
         $this->pagarme = new PagarMe\Client($this->key);
     }
 
-    public function payWithCreditCard($user, $ticket, $card_info, $cpf, $address)
+    public function payWithCreditCard($user, $ticket, $card_info, $cpf, $address): array
     {
         $total = 0;
         $tickets = [];
@@ -37,11 +39,11 @@ class PagarMeService
             'card_number' => $card_info['card_number'],
             'card_cvv' => $card_info['card_cvc'],
             'payment_method' => 'credit_card',
-            // 'postback_url' => 'http://requestb.in/pkt7pgpk',
+            'installments' => $card_info['installments'],
         ];
 
         $data['customer'] = [
-            'external_id' => (string) $user->id,
+            'external_id' => (string)$user->id,
             'name' => $user->name,
             'email' => $user->email,
             'type' => 'individual',
@@ -52,7 +54,7 @@ class PagarMeService
                     'number' => $cpf
                 ]
             ],
-            'phone_numbers' => [ '+551199999999' ]
+            'phone_numbers' => ['+551199999999']
         ];
 
         $data['billing'] = [
@@ -63,13 +65,13 @@ class PagarMeService
         foreach ($ticket as $_selectedTicket) {
             if ($_selectedTicket['quantity'] > 0) {
                 $_value = Ticket::find($selectedTicket['id'])->value;
-                array_push($tickets, [
-                    'id' => (string) $_selectedTicket['id'],
+                $tickets[] = [
+                    'id' => (string)$_selectedTicket['id'],
                     'title' => $_selectedTicket['description'],
                     'unit_price' => ($_value * 100),
                     'quantity' => $_selectedTicket['quantity'],
                     'tangible' => true
-                ]);
+                ];
             }
         }
 
@@ -86,7 +88,7 @@ class PagarMeService
         ];
     }
 
-    public function payWithBillet($ticket)
+    public function payWithBillet($ticket): ArrayObject
     {
         $total = 0;
         $tickets = [];
@@ -97,17 +99,17 @@ class PagarMeService
 
         foreach ($ticket as $_selectedTicket) {
             if ($_selectedTicket['quantity'] > 0) {
-                array_push($tickets, [
-                    'id' => (string) $_selectedTicket['id'],
+                $tickets[] = [
+                    'id' => (string)$_selectedTicket['id'],
                     'title' => $_selectedTicket['description'],
                     'unit_price' => ($_selectedTicket['value'] * 100),
                     'quantity' => $_selectedTicket['quantity'],
                     'tangible' => true,
-                ]);
+                ];
             }
         }
 
-        $transaction = $this->pagarme->paymentLinks()->create([
+        return $this->pagarme->paymentLinks()->create([
             "amount" => $total,
             "payment_method" => "boleto",
             "async" => false,
@@ -126,11 +128,9 @@ class PagarMeService
             ],
             'items' => $tickets,
         ]);
-
-        return $transaction;
     }
 
-    public function payWithPix($ticket)
+    public function payWithPix($ticket): ArrayObject
     {
         $total = 0;
         $tickets = [];
@@ -141,17 +141,17 @@ class PagarMeService
 
         foreach ($ticket as $_selectedTicket) {
             if ($_selectedTicket['quantity'] > 0) {
-                array_push($tickets, [
-                    'id' => (string) $_selectedTicket['id'],
+                $tickets[] = [
+                    'id' => (string)$_selectedTicket['id'],
                     'title' => $_selectedTicket['description'],
                     'unit_price' => ($_selectedTicket['value'] * 100),
                     'quantity' => $_selectedTicket['quantity'],
                     'tangible' => true,
-                ]);
+                ];
             }
         }
 
-        $transaction = $this->pagarme->paymentLinks()->create([
+        return $this->pagarme->paymentLinks()->create([
             "amount" => $total,
             "payment_method" => "pix",
             "async" => false,
@@ -170,22 +170,20 @@ class PagarMeService
             ],
             'items' => $tickets,
         ]);
-
-        return $transaction;
     }
 
-    public function captureTransaction($id)
+    public function captureTransaction($id): ?ArrayObject
     {
         try {
             return $this->pagarme->transactions()->get([
-                'id' => (string) $id
+                'id' => (string)$id
             ]);
-        } catch (\Exception) {
+        } catch (Exception) {
             return null;
         }
     }
 
-    public function captureTransactionLink($id)
+    public function captureTransactionLink($id): Http|null
     {
         $response = Http::get('https://api.pagar.me/1/orders', [
             'api_key' => $this->key,

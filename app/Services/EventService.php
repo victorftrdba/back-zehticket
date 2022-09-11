@@ -69,6 +69,7 @@ class EventService {
                     'card_cvc' => $data['card_cvc'],
                     'card_expiration_month' => $data['card_expiration_month'],
                     'card_expiration_year' => $data['card_expiration_year'],
+                    'installments' => $data['installments'],
                 ];
 
                 $credit_card = $pagarme->payWithCreditCard(Auth::user(), $data['tickets'], $card_info, $data['cpf'], $data['address']);

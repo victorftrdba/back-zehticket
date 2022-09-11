@@ -13,7 +13,7 @@ class BuyTicketEventRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return Auth::check();
     }
@@ -23,7 +23,7 @@ class BuyTicketEventRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'payment_type' => ['required', 'integer'],
@@ -32,6 +32,7 @@ class BuyTicketEventRequest extends FormRequest
             'card_cvc' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'string'],
             'card_expiration_month' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'string'],
             'card_expiration_year' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'string'],
+            'installments' => ['required_if:payment_type,'.Constants::CARTAO_CREDITO, 'numeric', 'between:1,12'],
             'cpf' => ['required_unless:payment_type,'.Constants::BOLETO.','.Constants::PIX, 'string'],
             'address' => ['required_unless:payment_type,'.Constants::BOLETO.','.Constants::PIX, 'array'],
             'address.country' => ['required_unless:payment_type,'.Constants::BOLETO.','.Constants::PIX, 'string'],
