@@ -44,7 +44,7 @@ class PermissionsSeeder extends Seeder
             ]
         ];
 
-        foreach (array_chunk($permissions, 3) as $permission)
+        foreach ($permissions as $permission)
         {
             Permission::create($permission);
         }

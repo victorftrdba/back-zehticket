@@ -50,6 +50,8 @@ class UserService {
             'password' => Hash::make($request->password),
         ]);
 
+        $user->sendEmailVerificationNotification();
+
         $user->roles()->attach([2]);
 
         return response()->json(['success' => $user], 201);

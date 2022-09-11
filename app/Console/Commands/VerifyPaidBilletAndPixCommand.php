@@ -9,11 +9,9 @@ use App\Models\PaidTicket;
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use App\Services\PagarMeService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendBoughtTicketsToUser;
 use App\Models\User;
-use Carbon\Carbon;
 
 class VerifyPaidBilletAndPixCommand extends Command
 {
