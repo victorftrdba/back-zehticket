@@ -184,7 +184,7 @@ class PagarMeService
         }
     }
 
-    public function captureTransactionLink($id): Http|null
+    public function captureTransactionLink($id): ?array
     {
         $response = Http::get('https://api.pagar.me/1/orders', [
             'api_key' => $this->key,

@@ -3,15 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Helpers\Constants;
-use App\Models\Ticket;
-use App\Models\Payment;
-use App\Models\PaidTicket;
-use Illuminate\Support\Str;
-use Illuminate\Console\Command;
-use App\Services\PagarMeService;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\SendBoughtTicketsToUser;
+use App\Models\PaidTicket;
+use App\Models\Payment;
+use App\Models\Ticket;
 use App\Models\User;
+use App\Services\PagarMeService;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class VerifyPaidBilletAndPixCommand extends Command
 {

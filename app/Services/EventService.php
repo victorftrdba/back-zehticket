@@ -71,8 +71,8 @@ class EventService
             case Constants::BOLETO:
                 $billet = $pagarme->payWithBillet($data['tickets']);
 
-                $payment = Payment::create([
-                    'total' => 500,
+                $paymentInfo = Payment::create([
+                    'total' => ($billet->amount / 100),
                     'payment_type' => Constants::BOLETO,
                     'receipt' => $billet->id,
                     'user_id' => Auth::user()->id,
@@ -80,20 +80,16 @@ class EventService
                 ]);
 
                 $payment = [
-                    'total' => 500,
-                    'payment_type' => Constants::BOLETO,
-                    'receipt' => $billet->id,
-                    'user_id' => Auth::user()->id,
-                    'event_id' => $infoTicket->event->id,
-                    'payment_id' => $payment->id,
+                    ...$paymentInfo,
+                    'payment_id' => $paymentInfo->id,
                     'url' => $billet->url,
                 ];
                 break;
             case Constants::PIX:
                 $pix = $pagarme->payWithPix($data['tickets']);
 
-                $payment = Payment::create([
-                    'total' => 500,
+                $paymentInfo = Payment::create([
+                    'total' => ($pix->amount / 100),
                     'payment_type' => Constants::PIX,
                     'receipt' => $pix->id,
                     'user_id' => Auth::user()->id,
@@ -101,12 +97,8 @@ class EventService
                 ]);
 
                 $payment = [
-                    'total' => 500,
-                    'payment_type' => Constants::PIX,
-                    'receipt' => $pix->id,
-                    'user_id' => Auth::user()->id,
-                    'event_id' => $infoTicket->event->id,
-                    'payment_id' => $payment->id,
+                    ...$paymentInfo,
+                    'payment_id' => $paymentInfo->id,
                     'url' => $pix->url,
                 ];
                 break;
