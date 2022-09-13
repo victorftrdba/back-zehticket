@@ -77,11 +77,11 @@ class EventService
                     'receipt' => $billet->id,
                     'user_id' => Auth::user()->id,
                     'event_id' => $infoTicket->event->id,
-                ]);
+                ])->toArray();
 
                 $payment = [
                     ...$paymentInfo,
-                    'payment_id' => $paymentInfo->id,
+                    'payment_id' => $paymentInfo['id'],
                     'url' => $billet->url,
                 ];
                 break;
@@ -94,11 +94,11 @@ class EventService
                     'receipt' => $pix->id,
                     'user_id' => Auth::user()->id,
                     'event_id' => $infoTicket->event->id,
-                ]);
+                ])->toArray();
 
                 $payment = [
                     ...$paymentInfo,
-                    'payment_id' => $paymentInfo->id,
+                    'payment_id' => $paymentInfo['id'],
                     'url' => $pix->url,
                 ];
                 break;
