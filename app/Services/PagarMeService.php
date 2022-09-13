@@ -7,6 +7,7 @@ use ArrayObject;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use PagarMe;
+use stdClass;
 
 class PagarMeService
 {
@@ -88,7 +89,7 @@ class PagarMeService
         ];
     }
 
-    public function payWithBillet($ticket): ArrayObject
+    public function payWithBillet($ticket): stdClass
     {
         $total = 0;
         $tickets = [];
@@ -130,7 +131,7 @@ class PagarMeService
         ]);
     }
 
-    public function payWithPix($ticket): ArrayObject
+    public function payWithPix($ticket): stdClass
     {
         $total = 0;
         $tickets = [];
