@@ -26,7 +26,7 @@ class PagarMeService
 
         foreach ($ticket as $selectedTicket) {
             $value = Ticket::find($selectedTicket['id'])->value;
-            $total += (($value * 100) * $selectedTicket['quantity']);
+            $total += ((($value * 1.1) * 100) * $selectedTicket['quantity']);
         }
 
         $expiration_year = substr($card_info['card_expiration_year'], -2);
@@ -95,7 +95,7 @@ class PagarMeService
         $tickets = [];
 
         foreach ($ticket as $selectedTicket) {
-            $total += (($selectedTicket['value'] * 100) * $selectedTicket['quantity']);
+            $total += ((($selectedTicket['value'] * 1.1) * 100) * $selectedTicket['quantity']);
         }
 
         foreach ($ticket as $_selectedTicket) {
@@ -137,7 +137,7 @@ class PagarMeService
         $tickets = [];
 
         foreach ($ticket as $selectedTicket) {
-            $total += (($selectedTicket['value'] * 100) * $selectedTicket['quantity']);
+            $total += ((($selectedTicket['value'] * 1.1) * 100) * $selectedTicket['quantity']);
         }
 
         foreach ($ticket as $_selectedTicket) {
