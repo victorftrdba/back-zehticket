@@ -12,6 +12,12 @@ class UserService {
     {
         $user = User::where('email', $data['email'])->first();
 
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json([
+                'error' => 'E-mail não verificado.'
+            ], 401);
+        }
+
         if (Auth::attempt($data)) {
             return response()->json([
                 'token' => $user->createToken($user->name)->plainTextToken,
