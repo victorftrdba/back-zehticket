@@ -35,7 +35,7 @@ class EventService
 
         foreach ($data['tickets'] as $ticket) {
             if ($ticket['quantity'] > 0) {
-                $infoTicket = Ticket::find($ticket['id']);
+                $infoTicket = Ticket::findOrFail($ticket['id']);
 
                 if ($infoTicket->amount === 0 || $ticket['quantity'] > $infoTicket->amount) {
                     return response()->json([

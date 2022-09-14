@@ -95,21 +95,23 @@ class PagarMeService
         ];
     }
 
-    public function payWithBillet($ticket): stdClass
+    public function payWithBillet($ticket): stdClass|ArrayObject
     {
         $total = 0;
         $tickets = [];
 
         foreach ($ticket as $selectedTicket) {
-            $total += ((($selectedTicket['value'] * 1.1) * 100) * $selectedTicket['quantity']);
+            $value = Ticket::find($selectedTicket['id'])->value;
+            $total += ((($value * 1.1) * 100) * $selectedTicket['quantity']);
         }
 
         foreach ($ticket as $_selectedTicket) {
+            $_value = Ticket::find($selectedTicket['id'])->value;
             if ($_selectedTicket['quantity'] > 0) {
                 $tickets[] = [
                     'id' => (string)$_selectedTicket['id'],
                     'title' => $_selectedTicket['description'],
-                    'unit_price' => ($_selectedTicket['value'] * 100),
+                    'unit_price' => ($_value * 100),
                     'quantity' => $_selectedTicket['quantity'],
                     'tangible' => true,
                 ];
@@ -137,21 +139,23 @@ class PagarMeService
         ]);
     }
 
-    public function payWithPix($ticket): stdClass
+    public function payWithPix($ticket): stdClass|ArrayObject
     {
         $total = 0;
         $tickets = [];
 
         foreach ($ticket as $selectedTicket) {
-            $total += ((($selectedTicket['value'] * 1.1) * 100) * $selectedTicket['quantity']);
+            $value = Ticket::find($selectedTicket['id'])->value;
+            $total += ((($value * 1.1) * 100) * $selectedTicket['quantity']);
         }
 
         foreach ($ticket as $_selectedTicket) {
+            $_value = Ticket::find($selectedTicket['id'])->value;
             if ($_selectedTicket['quantity'] > 0) {
                 $tickets[] = [
                     'id' => (string)$_selectedTicket['id'],
                     'title' => $_selectedTicket['description'],
-                    'unit_price' => ($_selectedTicket['value'] * 100),
+                    'unit_price' => ($_value * 100),
                     'quantity' => $_selectedTicket['quantity'],
                     'tangible' => true,
                 ];
