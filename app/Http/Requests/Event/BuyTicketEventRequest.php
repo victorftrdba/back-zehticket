@@ -60,9 +60,9 @@ class BuyTicketEventRequest extends FormRequest
             'card_expiration_month.required_if' => 'Se o tipo de pagamento for cartão de crédito, é obrigatório enviar o mês de expiração do cartão.',
             'card_expiration_year.required_if' => 'Se o tipo de pagamento for cartão de crédito, é obrigatório enviar o ano de expiração do cartão.',
             'installments.required_if' => 'Se o tipo de pagamento for cartão de crédito, é obrigatório enviar a quantidade de parcelas.',
-            'cpf.required' => 'O CPF é obrigatório para realizar compras.',
-            'address.required' => 'O endereço é obrigatório.',
-            'address.zipcode.required' => 'É obrigatório inserir um CEP válido para preencher as colunas de endereço.',
+            'cpf.required_unless' => 'O CPF é obrigatório para realizar compras.',
+            'address.required_unless' => 'O endereço é obrigatório.',
+            'address.zipcode.required_unless' => 'É obrigatório inserir um CEP válido para preencher as colunas de endereço.',
             'tickets' => 'É obrigatório informar os ingressos que serão comprados.',
         ];
     }
