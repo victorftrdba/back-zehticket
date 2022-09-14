@@ -111,7 +111,7 @@ class PagarMeService
         }
 
         return $this->pagarMe->paymentLinks()->create([
-            "amount" => $total,
+            "amount" => strval($total),
             "payment_method" => "boleto",
             "async" => false,
             'payment_config' => [
@@ -153,7 +153,7 @@ class PagarMeService
         }
 
         return $this->pagarMe->paymentLinks()->create([
-            "amount" => $total,
+            "amount" => strval($total),
             "payment_method" => "pix",
             "async" => false,
             'payment_config' => [
