@@ -34,7 +34,7 @@ class PagarMeService
         $expiration_month = strlen($card_info['card_expiration_month']) === 1 ? "0{$card_info['card_expiration_month']}" : $card_info['card_expiration_month'];
 
         $data = [
-            'amount' => $total,
+            'amount' => strval($total),
             'card_holder_name' => $card_info['card_name'],
             'card_expiration_date' => "{$expiration_month}{$expiration_year}", // MMAA
             'card_number' => $card_info['card_number'],
