@@ -12,10 +12,16 @@ use stdClass;
 class PagarMeService
 {
     public PagarMe\Client $pagarMe;
-    public string $key = 'ak_test_EIMmChmhFVxRJ73ofZrzsKsx7Z7XXA';
+    public string $key;
 
     public function __construct()
     {
+        if (env('APP_ENV') === 'production') {
+            $this->key = 'ak_live_X4uQvjD8QWR1zLB1L7WwpwymUDzJmw';
+        } else {
+            $this->key = 'ak_test_EIMmChmhFVxRJ73ofZrzsKsx7Z7XXA';
+        }
+
         $this->pagarMe = new PagarMe\Client($this->key);
     }
 
