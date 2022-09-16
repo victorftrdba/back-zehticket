@@ -106,7 +106,7 @@ class PagarMeService
         }
 
         foreach ($ticket as $_selectedTicket) {
-            $_value = Ticket::find($selectedTicket['id'])->value;
+            $_value = Ticket::find($_selectedTicket['id'])->value;
             if ($_selectedTicket['quantity'] > 0) {
                 $tickets[] = [
                     'id' => (string)$_selectedTicket['id'],
@@ -150,7 +150,7 @@ class PagarMeService
         }
 
         foreach ($ticket as $_selectedTicket) {
-            $_value = Ticket::find($selectedTicket['id'])->value;
+            $_value = Ticket::find($_selectedTicket['id'])->value;
             if ($_selectedTicket['quantity'] > 0) {
                 $tickets[] = [
                     'id' => (string)$_selectedTicket['id'],
