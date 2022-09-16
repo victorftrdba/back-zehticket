@@ -26,7 +26,7 @@ class RegisterUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:90'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string'],
+            'password' => ['required', 'min:8', 'string'],
         ];
     }
 
@@ -36,7 +36,8 @@ class RegisterUserRequest extends FormRequest
             'name.required' => 'Insira um nome válido.',
             'email.required' => 'Insira um e-mail válido.',
             'email.unique' => 'O e-mail inserido já existe em nosso sistema.',
-            'password.required' => 'Insira uma senha válida.'
+            'password.required' => 'Insira uma senha válida.',
+            'password.min' => 'Insira pelo menos 8 caracteres na senha.'
         ];
     }
 }
