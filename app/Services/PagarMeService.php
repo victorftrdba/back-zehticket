@@ -32,7 +32,7 @@ class PagarMeService
 
         foreach ($ticket as $selectedTicket) {
             $value = Ticket::find($selectedTicket['id'])->value;
-            $total += ((($value * 1.1) * 100) * $selectedTicket['quantity']);
+            $total += (($value * 1.1) * 100);
         }
 
         $expiration_year = substr($card_info['card_expiration_year'], -2);
@@ -70,16 +70,15 @@ class PagarMeService
         ];
 
         foreach ($ticket as $_selectedTicket) {
-            if ($_selectedTicket['quantity'] > 0) {
-                $_value = Ticket::find($selectedTicket['id'])->value;
-                $tickets[] = [
-                    'id' => (string)$_selectedTicket['id'],
-                    'title' => $_selectedTicket['description'],
-                    'unit_price' => ($_value * 100),
-                    'quantity' => $_selectedTicket['quantity'],
-                    'tangible' => true
-                ];
-            }
+            $_value = Ticket::find($selectedTicket['id'])->value;
+            $tickets[] = [
+                'id' => (string)$_selectedTicket['id'],
+                'title' => $_selectedTicket['description'],
+                'unit_price' => ($_value * 100),
+                'quantity' => 1,
+                'tangible' => true,
+                'venue' => $_selectedTicket['client_email']
+            ];
         }
 
         $data['items'] = $tickets;
@@ -102,20 +101,19 @@ class PagarMeService
 
         foreach ($ticket as $selectedTicket) {
             $value = Ticket::find($selectedTicket['id'])->value;
-            $total += ((($value * 1.1) * 100) * $selectedTicket['quantity']);
+            $total += (($value * 1.1) * 100);
         }
 
         foreach ($ticket as $_selectedTicket) {
             $_value = Ticket::find($_selectedTicket['id'])->value;
-            if ($_selectedTicket['quantity'] > 0) {
-                $tickets[] = [
-                    'id' => (string)$_selectedTicket['id'],
-                    'title' => $_selectedTicket['description'],
-                    'unit_price' => ($_value * 100),
-                    'quantity' => $_selectedTicket['quantity'],
-                    'tangible' => true,
-                ];
-            }
+            $tickets[] = [
+                'id' => (string)$_selectedTicket['id'],
+                'title' => $_selectedTicket['description'],
+                'unit_price' => ($_value * 100),
+                'quantity' => 1,
+                'tangible' => true,
+                'venue' => $_selectedTicket['client_email']
+            ];
         }
 
         return $this->pagarMe->paymentLinks()->create([
@@ -146,20 +144,19 @@ class PagarMeService
 
         foreach ($ticket as $selectedTicket) {
             $value = Ticket::find($selectedTicket['id'])->value;
-            $total += ((($value * 1.1) * 100) * $selectedTicket['quantity']);
+            $total += (($value * 1.1) * 100);
         }
 
         foreach ($ticket as $_selectedTicket) {
             $_value = Ticket::find($_selectedTicket['id'])->value;
-            if ($_selectedTicket['quantity'] > 0) {
-                $tickets[] = [
-                    'id' => (string)$_selectedTicket['id'],
-                    'title' => $_selectedTicket['description'],
-                    'unit_price' => ($_value * 100),
-                    'quantity' => $_selectedTicket['quantity'],
-                    'tangible' => true,
-                ];
-            }
+            $tickets[] = [
+                'id' => (string)$_selectedTicket['id'],
+                'title' => $_selectedTicket['description'],
+                'unit_price' => ($_value * 100),
+                'quantity' => 1,
+                'tangible' => true,
+                'venue' => $_selectedTicket['client_email']
+            ];
         }
 
         return $this->pagarMe->paymentLinks()->create([
@@ -183,7 +180,7 @@ class PagarMeService
         ]);
     }
 
-    public function captureTransaction($id): ?ArrayObject
+    public function captureTransaction($id): stdClass|ArrayObject|null
     {
         try {
             return $this->pagarMe->transactions()->get([

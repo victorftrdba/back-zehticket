@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('receipt')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('event_id');
+            $table->string('client_name');
+            $table->string('client_email');
             $table->timestamps();
         });
     }

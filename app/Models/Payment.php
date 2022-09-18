@@ -18,6 +18,8 @@ class Payment extends Model
         'user_id',
         'event_id',
         'paid',
+        'client_name',
+        'client_email',
     ];
 
     protected $dates = [
@@ -28,5 +30,10 @@ class Payment extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

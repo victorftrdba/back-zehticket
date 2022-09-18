@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -31,7 +30,7 @@ class SendBoughtTicketsToUser extends Mailable
     public function build()
     {
         return $this->from('equipe@zehticket.com.br', 'Equipe ZehTicket')
-        ->subject('Ingressos Comprados com Sucesso!')
-        ->view('emails.bought-tickets');
+            ->subject('Ingressos Comprados com Sucesso!')
+            ->view('emails.bought-tickets');
     }
 }

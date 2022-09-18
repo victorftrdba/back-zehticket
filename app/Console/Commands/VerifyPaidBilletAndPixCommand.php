@@ -7,7 +7,6 @@ use App\Mail\SendBoughtTicketsToUser;
 use App\Models\PaidTicket;
 use App\Models\Payment;
 use App\Models\Ticket;
-use App\Models\User;
 use App\Services\PagarMeService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -40,22 +39,19 @@ class VerifyPaidBilletAndPixCommand extends Command
             $codes = [];
             $transaction = (new PagarMeService)->captureTransaction($payment->receipt);
             $transactionLink = (new PagarMeService)->captureTransactionLink($payment->receipt);
-            $user = User::find($payment->user_id);
 
             if ($payment->payment_type === Constants::CARTAO_CREDITO && $transaction->status === 'paid') {
-                collect($transaction->items)->map(function ($item) use ($codes, $user) {
-                    $boughtTicket = Ticket::find($item->id);
-                    $boughtTicket->decrement('amount', $item->quantity);
-
-                    for ($i = 0; $i < $item->quantity; $i++) {
+                collect($transaction->items)->map(function ($item) use ($codes, $payment) {
+                    if ($item->venue === $payment->client_email) {
+                        $boughtTicket = Ticket::find($item->id);
+                        $boughtTicket->decrement('amount', $item->quantity);
                         $codes[] = PaidTicket::create([
                             'code' => Str::uuid(),
                             'event_id' => $boughtTicket->event->id,
                             'ticket_id' => $boughtTicket->id,
                         ]);
+                        Mail::to(['address' => $payment->client_email])->send(new SendBoughtTicketsToUser($codes));
                     }
-
-                    Mail::to($user)->send(new SendBoughtTicketsToUser($codes));
                 });
 
                 $payment->update([
@@ -63,22 +59,20 @@ class VerifyPaidBilletAndPixCommand extends Command
                 ]);
             }
 
-            if (in_array($payment->payment_type, [Constants::BOLETO, Constants::PIX])) {
+            if (in_array($payment->payment_type, [Constants::BOLETO, Constants::PIX], true)) {
                 foreach ($transactionLink as $infoTransaction) {
                     if ($infoTransaction['status'] === 'paid') {
-                        collect($infoTransaction['items'])->map(function ($infoTransactionItem) use ($codes, $user) {
-                            $boughtTicket = Ticket::find($infoTransactionItem['id']);
-                            $boughtTicket->decrement('amount', $infoTransactionItem['id']);
-
-                            for ($i = 0; $i < $infoTransactionItem['quantity']; $i++) {
+                        collect($infoTransaction['items'])->map(function ($infoTransactionItem) use ($codes, $payment) {
+                            if ($infoTransactionItem->venue === $payment->client_email) {
+                                $boughtTicket = Ticket::find($infoTransactionItem->id);
+                                $boughtTicket->decrement('amount', $infoTransactionItem->quantity);
                                 $codes[] = PaidTicket::create([
                                     'code' => Str::uuid(),
                                     'event_id' => $boughtTicket->event->id,
                                     'ticket_id' => $boughtTicket->id,
                                 ]);
+                                Mail::to(['address' => $payment->client_email])->send(new SendBoughtTicketsToUser($codes));
                             }
-
-                            Mail::to($user)->send(new SendBoughtTicketsToUser($codes));
                         });
 
                         $payment->update([

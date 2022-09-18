@@ -34,15 +34,13 @@ class EventService
         $pagarme = new PagarMeService;
 
         foreach ($data['tickets'] as $ticket) {
-            if ($ticket['quantity'] > 0) {
-                $infoTicket = Ticket::findOrFail($ticket['id']);
+            $infoTicket = Ticket::findOrFail($ticket['id']);
 
-                if ($infoTicket->amount === 0 || $ticket['quantity'] > $infoTicket->amount) {
-                    return response()->json([
-                        'error' => true,
-                        'message' => 'Ingressos esgotados ou insuficientes.'
-                    ], 406);
-                }
+            if ($infoTicket->amount === 0) {
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Ingressos esgotados ou insuficientes.'
+                ], 406);
             }
         }
 
@@ -59,25 +57,33 @@ class EventService
 
                 $credit_card = $pagarme->payWithCreditCard(Auth::user(), $data['tickets'], $card_info, $data['cpf'], $data['address']);
 
-                $payment = Payment::create([
-                    'total' => $credit_card['amount'],
-                    'payment_type' => Constants::CARTAO_CREDITO,
-                    'card_number' => $credit_card['last_digits'],
-                    'receipt' => $credit_card['transaction_id'],
-                    'user_id' => Auth::user()->id,
-                    'event_id' => $infoTicket->event->id,
-                ]);
+                foreach ($data['tickets'] as $ticket) {
+                    $payment = Payment::create([
+                        'total' => $credit_card['amount'],
+                        'payment_type' => Constants::CARTAO_CREDITO,
+                        'card_number' => $credit_card['last_digits'],
+                        'receipt' => $credit_card['transaction_id'],
+                        'user_id' => Auth::user()->id,
+                        'event_id' => $infoTicket->event->id,
+                        'client_name' => $ticket['client_name'],
+                        'client_email' => $ticket['client_email'],
+                    ]);
+                }
                 break;
             case Constants::BOLETO:
                 $billet = $pagarme->payWithBillet($data['tickets']);
 
-                $paymentInfo = Payment::create([
-                    'total' => ($billet->amount / 100),
-                    'payment_type' => Constants::BOLETO,
-                    'receipt' => $billet->id,
-                    'user_id' => Auth::user()->id,
-                    'event_id' => $infoTicket->event->id,
-                ])->toArray();
+                foreach ($data['tickets'] as $ticket) {
+                    $paymentInfo = Payment::create([
+                        'total' => ($billet->amount / 100),
+                        'payment_type' => Constants::BOLETO,
+                        'receipt' => $billet->id,
+                        'user_id' => Auth::user()->id,
+                        'event_id' => $infoTicket->event->id,
+                        'client_name' => $ticket['client_name'],
+                        'client_email' => $ticket['client_email'],
+                    ])->toArray();
+                }
 
                 $payment = [
                     ...$paymentInfo,
@@ -88,13 +94,17 @@ class EventService
             case Constants::PIX:
                 $pix = $pagarme->payWithPix($data['tickets']);
 
-                $paymentInfo = Payment::create([
-                    'total' => ($pix->amount / 100),
-                    'payment_type' => Constants::PIX,
-                    'receipt' => $pix->id,
-                    'user_id' => Auth::user()->id,
-                    'event_id' => $infoTicket->event->id,
-                ])->toArray();
+                foreach ($data['tickets'] as $ticket) {
+                    $paymentInfo = Payment::create([
+                        'total' => ($pix->amount / 100),
+                        'payment_type' => Constants::PIX,
+                        'receipt' => $pix->id,
+                        'user_id' => Auth::user()->id,
+                        'event_id' => $infoTicket->event->id,
+                        'client_name' => $ticket['client_name'],
+                        'client_email' => $ticket['client_email'],
+                    ])->toArray();
+                }
 
                 $payment = [
                     ...$paymentInfo,
