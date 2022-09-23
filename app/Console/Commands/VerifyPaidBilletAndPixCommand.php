@@ -49,8 +49,9 @@ class VerifyPaidBilletAndPixCommand extends Command
                             'code' => Str::uuid(),
                             'event_id' => $boughtTicket->event->id,
                             'ticket_id' => $boughtTicket->id,
+                            'client_name' => $payment->client_name
                         ]);
-                        Mail::to(['address' => $payment->client_email])->send(new SendBoughtTicketsToUser($codes));
+                        Mail::to(['address' => $payment->client_email])->send(new SendBoughtTicketsToUser($codes, $payment->client_name));
                     }
                 });
 
@@ -71,7 +72,7 @@ class VerifyPaidBilletAndPixCommand extends Command
                                     'event_id' => $boughtTicket->event->id,
                                     'ticket_id' => $boughtTicket->id,
                                 ]);
-                                Mail::to(['address' => $payment->client_email])->send(new SendBoughtTicketsToUser($codes));
+                                Mail::to(['address' => $payment->client_email])->send(new SendBoughtTicketsToUser($codes, $payment->client_name));
                             }
                         });
 

@@ -11,15 +11,17 @@ class SendBoughtTicketsToUser extends Mailable
     use Queueable, SerializesModels;
 
     public $codes;
+    public $client_name;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(array $codes)
+    public function __construct(array $codes, string $client_name)
     {
         $this->codes = $codes;
+        $this->client_name = $client_name;
     }
 
     /**
