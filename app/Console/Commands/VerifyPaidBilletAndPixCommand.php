@@ -63,9 +63,9 @@ class VerifyPaidBilletAndPixCommand extends Command
                 foreach ($transactionLink as $infoTransaction) {
                     if ($infoTransaction['status'] === 'paid') {
                         collect($infoTransaction['items'])->map(function ($infoTransactionItem) use ($codes, $payment) {
-                            if ($infoTransactionItem->venue === $payment->client_email) {
-                                $boughtTicket = Ticket::find($infoTransactionItem->id);
-                                $boughtTicket->decrement('amount', $infoTransactionItem->quantity);
+                            if (!PaidTicket::where('id', $infoTransactionItem['id'])->exists()) {
+                                $boughtTicket = Ticket::find($infoTransactionItem['id']);
+                                $boughtTicket->decrement('amount', $infoTransactionItem['quantity']);
                                 $codes[] = PaidTicket::create([
                                     'code' => Str::uuid(),
                                     'event_id' => $boughtTicket->event->id,
