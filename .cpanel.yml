@@ -2,7 +2,7 @@
 
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/wwzeht/api.zehticket.com.br
+    - export DEPLOYPATH=/home/wwzeht/api.zehticket.com.br/
     - /bin/cp * $DEPLOYPATH
     - /usr/bin/php /home/wwzeht/api.zehticket.com.br/artisan key:generate
     - /usr/bin/php /home/wwzeht/api.zehticket.com.br/artisan migrate
