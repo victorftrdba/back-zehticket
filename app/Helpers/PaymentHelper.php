@@ -9,7 +9,7 @@ class PaymentHelper
 {
     public function formatPayment($tickets, $amount, $receipt, $eventId, $type, ...$cardNumber): array
     {
-        $paymentInfo = [];
+        $paymentInfo = null;
 
         foreach ($tickets as $ticket) {
             $paymentInfo = Payment::create([
