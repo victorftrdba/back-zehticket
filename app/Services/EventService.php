@@ -43,7 +43,7 @@ class EventService
     public function buyTicket(array $data): JsonResponse
     {
         $payment = [];
-        $eventId = 0;
+        $eventId = $this->ticket->find($data['tickets'][0]['id'])->event->id;
 
         foreach ($data['tickets'] as $ticket) {
             if (!$this->ticket->isAvailable($ticket['id'])) {
@@ -52,7 +52,6 @@ class EventService
                     'message' => 'Ingressos esgotados ou insuficientes.'
                 ], 406);
             }
-            $eventId = $this->ticket->find($ticket['id'])->event->id;
         }
 
         switch ($data['payment_type']) {
