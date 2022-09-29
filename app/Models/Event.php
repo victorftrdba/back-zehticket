@@ -28,7 +28,7 @@ class Event extends Model
         'updated_at',
     ];
 
-    public static function searchEventWithTickets(string $search, $id)
+    public static function searchEventWithTickets(?string $search, $id)
     {
         return self::with('tickets')
             ->when($search, function ($query, $value) {
