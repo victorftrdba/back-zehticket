@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PaymentHelper
 {
-    public function formatPayment($tickets, $amount, $receipt, $eventId, $type, ...$cardNumber): array
+    public function formatPayment($tickets, $amount, $receipt, $eventId, $type, $cardNumber = null): array
     {
         $paymentInfo = null;
 

@@ -101,7 +101,7 @@ class EventService
                     ($pix->amount / 100),
                     $pix->id,
                     $eventId,
-                    Constants::PIX
+                    Constants::PIX,
                 );
 
                 $payment = [
