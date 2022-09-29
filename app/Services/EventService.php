@@ -43,7 +43,7 @@ class EventService
     public function buyTicket(array $data): JsonResponse
     {
         $payment = [];
-        $infoTicket = [];
+        $eventId = 0;
 
         foreach ($data['tickets'] as $ticket) {
             if (!$this->ticket->isAvailable($ticket['id'])) {
@@ -52,6 +52,7 @@ class EventService
                     'message' => 'Ingressos esgotados ou insuficientes.'
                 ], 406);
             }
+            $eventId = $this->ticket->find($ticket['id'])->event->id;
         }
 
         switch ($data['payment_type']) {
@@ -71,7 +72,7 @@ class EventService
                     $data['tickets'],
                     $credit_card['amount'],
                     $credit_card['transaction_id'],
-                    $infoTicket->event->id,
+                    $eventId,
                     Constants::CARTAO_CREDITO,
                     $credit_card['last_digits']
                 );
@@ -83,7 +84,7 @@ class EventService
                     $data['tickets'],
                     ($billet->amount / 100),
                     $billet->id,
-                    $infoTicket->event->id,
+                    $eventId,
                     Constants::BOLETO
                 );
 
@@ -100,7 +101,7 @@ class EventService
                     $data['tickets'],
                     ($pix->amount / 100),
                     $pix->id,
-                    $infoTicket->event->id,
+                    $eventId,
                     Constants::PIX
                 );
 
