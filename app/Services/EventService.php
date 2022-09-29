@@ -3,14 +3,29 @@
 namespace App\Services;
 
 use App\Helpers\Constants;
+use App\Helpers\PaymentHelper;
 use App\Models\Event;
-use App\Models\Payment;
 use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class EventService
 {
+    public PagarMeService $pagarMeService;
+    public PaymentHelper $paymentHelper;
+    public Ticket $ticket;
+
+    public function __construct(
+        PagarMeService $pagarMeService,
+        PaymentHelper  $paymentHelper,
+        Ticket         $ticket
+    )
+    {
+        $this->pagarMeService = $pagarMeService;
+        $this->paymentHelper = $paymentHelper;
+        $this->ticket = $ticket;
+    }
+
     public function findAll(): JsonResponse
     {
         $events = Event::with(['user', 'tickets'])->paginate(15);
@@ -20,23 +35,18 @@ class EventService
 
     public function show(?string $search, int $id): JsonResponse
     {
-        $event = Event::with('tickets')
-            ->when($search, function ($query, $value) {
-                return $query->where('title', 'LIKE', "%{$value}%");
-            })
-            ->find($id);
+        $event = Event::searchEventWithTickets($search, $id);
 
         return response()->json($event);
     }
 
     public function buyTicket(array $data): JsonResponse
     {
-        $pagarme = new PagarMeService;
+        $payment = [];
+        $infoTicket = [];
 
         foreach ($data['tickets'] as $ticket) {
-            $infoTicket = Ticket::findOrFail($ticket['id']);
-
-            if ($infoTicket->amount === 0) {
+            if ($this->ticket->isAvailable($ticket['id'])) {
                 return response()->json([
                     'error' => true,
                     'message' => 'Ingressos esgotados ou insuficientes.'
@@ -55,35 +65,27 @@ class EventService
                     'installments' => $data['installments'],
                 ];
 
-                $credit_card = $pagarme->payWithCreditCard(Auth::user(), $data['tickets'], $card_info, $data['cpf'], $data['address']);
+                $credit_card = $this->pagarMeService->payWithCreditCard(Auth::user(), $data['tickets'], $card_info, $data['cpf'], $data['address']);
 
-                foreach ($data['tickets'] as $ticket) {
-                    $payment = Payment::create([
-                        'total' => $credit_card['amount'],
-                        'payment_type' => Constants::CARTAO_CREDITO,
-                        'card_number' => $credit_card['last_digits'],
-                        'receipt' => $credit_card['transaction_id'],
-                        'user_id' => Auth::user()->id,
-                        'event_id' => $infoTicket->event->id,
-                        'client_name' => $ticket['client_name'],
-                        'client_email' => $ticket['client_email'],
-                    ]);
-                }
+                $this->paymentHelper->formatPayment(
+                    $data['tickets'],
+                    $credit_card['amount'],
+                    $credit_card['transaction_id'],
+                    $infoTicket->event->id,
+                    Constants::CARTAO_CREDITO,
+                    $credit_card['last_digits']
+                );
                 break;
             case Constants::BOLETO:
-                $billet = $pagarme->payWithBillet($data['tickets']);
+                $billet = $this->pagarMeService->payWithBillet($data['tickets']);
 
-                foreach ($data['tickets'] as $ticket) {
-                    $paymentInfo = Payment::create([
-                        'total' => ($billet->amount / 100),
-                        'payment_type' => Constants::BOLETO,
-                        'receipt' => $billet->id,
-                        'user_id' => Auth::user()->id,
-                        'event_id' => $infoTicket->event->id,
-                        'client_name' => $ticket['client_name'],
-                        'client_email' => $ticket['client_email'],
-                    ])->toArray();
-                }
+                $paymentInfo = $this->paymentHelper->formatPayment(
+                    $data['tickets'],
+                    ($billet->amount / 100),
+                    $billet->id,
+                    $infoTicket->event->id,
+                    Constants::BOLETO
+                );
 
                 $payment = [
                     ...$paymentInfo,
@@ -92,19 +94,15 @@ class EventService
                 ];
                 break;
             case Constants::PIX:
-                $pix = $pagarme->payWithPix($data['tickets']);
+                $pix = $this->pagarMeService->payWithPix($data['tickets']);
 
-                foreach ($data['tickets'] as $ticket) {
-                    $paymentInfo = Payment::create([
-                        'total' => ($pix->amount / 100),
-                        'payment_type' => Constants::PIX,
-                        'receipt' => $pix->id,
-                        'user_id' => Auth::user()->id,
-                        'event_id' => $infoTicket->event->id,
-                        'client_name' => $ticket['client_name'],
-                        'client_email' => $ticket['client_email'],
-                    ])->toArray();
-                }
+                $paymentInfo = $this->paymentHelper->formatPayment(
+                    $data['tickets'],
+                    ($pix->amount / 100),
+                    $pix->id,
+                    $infoTicket->event->id,
+                    Constants::PIX
+                );
 
                 $payment = [
                     ...$paymentInfo,

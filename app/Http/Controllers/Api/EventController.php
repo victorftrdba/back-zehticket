@@ -12,9 +12,9 @@ class EventController extends Controller
 {
     private EventService $eventService;
 
-    public function __construct()
+    public function __construct(EventService $eventService)
     {
-        $this->eventService = new EventService;
+        $this->eventService = $eventService;
     }
 
     public function findAll(): JsonResponse

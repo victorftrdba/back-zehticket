@@ -28,6 +28,15 @@ class Event extends Model
         'updated_at',
     ];
 
+    public static function searchEventWithTickets(string $search, $id)
+    {
+        return self::with('tickets')
+            ->when($search, function ($query, $value) {
+                return $query->where('title', 'LIKE', "%{$value}%");
+            })
+            ->find($id);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
