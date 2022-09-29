@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Helpers\PagarMeHelper;
+use App\Helpers\TicketHelper;
 use App\Models\Ticket;
 use ArrayObject;
 use Exception;
@@ -12,9 +14,16 @@ use stdClass;
 class PagarMeService
 {
     public PagarMe\Client $pagarMe;
+    public Ticket $ticket;
+    public TicketHelper $ticketHelper;
+    public PagarMeHelper $pagarMeHelper;
     public string $key;
 
-    public function __construct()
+    public function __construct(
+        Ticket        $ticket,
+        TicketHelper  $ticketHelper,
+        PagarMeHelper $pagarMeHelper
+    )
     {
         if (env('APP_ENV') === 'production') {
             $this->key = 'ak_live_X4uQvjD8QWR1zLB1L7WwpwymUDzJmw';
@@ -23,65 +32,14 @@ class PagarMeService
         }
 
         $this->pagarMe = new PagarMe\Client($this->key);
+        $this->ticket = $ticket;
+        $this->ticketHelper = $ticketHelper;
+        $this->pagarMeHelper = $pagarMeHelper;
     }
 
     public function payWithCreditCard($user, $ticket, $card_info, $cpf, $address): array
     {
-        $total = 0;
-        $tickets = [];
-
-        foreach ($ticket as $selectedTicket) {
-            $value = Ticket::find($selectedTicket['id'])->value;
-            $total += (($value * 1.1) * 100);
-        }
-
-        $expiration_year = substr($card_info['card_expiration_year'], -2);
-
-        $expiration_month = strlen($card_info['card_expiration_month']) === 1 ? "0{$card_info['card_expiration_month']}" : $card_info['card_expiration_month'];
-
-        $data = [
-            'amount' => strval($total),
-            'card_holder_name' => $card_info['card_name'],
-            'card_expiration_date' => "{$expiration_month}{$expiration_year}", // MMAA
-            'card_number' => $card_info['card_number'],
-            'card_cvv' => $card_info['card_cvv'],
-            'payment_method' => 'credit_card',
-            'installments' => $card_info['installments'],
-        ];
-
-        $data['customer'] = [
-            'external_id' => (string)$user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'type' => 'individual',
-            'country' => 'br',
-            'documents' => [
-                [
-                    'type' => 'cpf',
-                    'number' => $cpf
-                ]
-            ],
-            'phone_numbers' => ['+551199999999']
-        ];
-
-        $data['billing'] = [
-            'name' => $user->name,
-            'address' => $address
-        ];
-
-        foreach ($ticket as $_selectedTicket) {
-            $_value = Ticket::find($selectedTicket['id'])->value;
-            $tickets[] = [
-                'id' => (string)$_selectedTicket['id'],
-                'title' => $_selectedTicket['description'],
-                'unit_price' => ($_value * 100),
-                'quantity' => 1,
-                'tangible' => true,
-                'venue' => $_selectedTicket['client_email']
-            ];
-        }
-
-        $data['items'] = $tickets;
+        $data = $this->pagarMeHelper->formatData($user, $ticket, $card_info, $cpf, $address);
 
         $transaction = $this->pagarMe->transactions()->create($data);
 
@@ -100,24 +58,15 @@ class PagarMeService
         $tickets = [];
 
         foreach ($ticket as $selectedTicket) {
-            $value = Ticket::find($selectedTicket['id'])->value;
-            $total += (($value * 1.1) * 100);
+            $total += $this->ticket->calculateTotalWithTax($selectedTicket['id']);
         }
 
         foreach ($ticket as $_selectedTicket) {
-            $_value = Ticket::find($_selectedTicket['id'])->value;
-            $tickets[] = [
-                'id' => (string)$_selectedTicket['id'],
-                'title' => $_selectedTicket['description'],
-                'unit_price' => ($_value * 100),
-                'quantity' => 1,
-                'tangible' => true,
-                'venue' => $_selectedTicket['client_email']
-            ];
+            $tickets = $this->ticketHelper->formatTicket($_selectedTicket);
         }
 
         return $this->pagarMe->paymentLinks()->create([
-            "amount" => strval($total),
+            "amount" => (string)$total,
             "payment_method" => "boleto",
             "async" => false,
             'payment_config' => [
@@ -143,24 +92,15 @@ class PagarMeService
         $tickets = [];
 
         foreach ($ticket as $selectedTicket) {
-            $value = Ticket::find($selectedTicket['id'])->value;
-            $total += (($value * 1.1) * 100);
+            $total += $this->ticket->calculateTotalWithTax($selectedTicket['id']);
         }
 
         foreach ($ticket as $_selectedTicket) {
-            $_value = Ticket::find($_selectedTicket['id'])->value;
-            $tickets[] = [
-                'id' => (string)$_selectedTicket['id'],
-                'title' => $_selectedTicket['description'],
-                'unit_price' => ($_value * 100),
-                'quantity' => 1,
-                'tangible' => true,
-                'venue' => $_selectedTicket['client_email']
-            ];
+            $tickets = $this->ticketHelper->formatTicket($_selectedTicket);
         }
 
         return $this->pagarMe->paymentLinks()->create([
-            "amount" => strval($total),
+            "amount" => (string)$total,
             "payment_method" => "pix",
             "async" => false,
             'payment_config' => [

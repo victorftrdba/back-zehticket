@@ -15,6 +15,12 @@ class Ticket extends Model
         return self::findOrFail($id)->amount > 0;
     }
 
+    public function calculateTotalWithTax($id): float
+    {
+        $value = self::find($id)->value;
+        return (($value * 1.1) * 100);
+    }
+
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);

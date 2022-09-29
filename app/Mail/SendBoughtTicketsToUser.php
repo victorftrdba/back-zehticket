@@ -10,26 +10,16 @@ class SendBoughtTicketsToUser extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $codes;
-    public $client_name;
+    public array $codes;
+    public string $client_name;
 
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
     public function __construct(array $codes, string $client_name)
     {
         $this->codes = $codes;
         $this->client_name = $client_name;
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
-    public function build()
+    public function build(): self
     {
         return $this->from('equipe@zehticket.com.br', 'Equipe ZehTicket')
             ->subject('Ingressos Comprados com Sucesso!')
