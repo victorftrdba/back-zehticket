@@ -62,7 +62,7 @@ class PagarMeService
         }
 
         foreach ($ticket as $_selectedTicket) {
-            $tickets = $this->ticketHelper->formatTicket($_selectedTicket);
+            $tickets[] = $this->ticketHelper->formatTicket($_selectedTicket);
         }
 
         return $this->pagarMe->paymentLinks()->create([
@@ -96,7 +96,7 @@ class PagarMeService
         }
 
         foreach ($ticket as $_selectedTicket) {
-            $tickets = $this->ticketHelper->formatTicket($_selectedTicket);
+            $tickets[] = $this->ticketHelper->formatTicket($_selectedTicket);
         }
 
         return $this->pagarMe->paymentLinks()->create([

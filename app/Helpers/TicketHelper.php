@@ -15,11 +15,9 @@ class TicketHelper
 
     public function formatTicket(array $ticket): array
     {
-        $tickets = [];
-
         $_value = $this->ticket->find($ticket['id'])->value;
 
-        $tickets[] = [
+        return [
             'id' => (string)$ticket['id'],
             'title' => $ticket['description'],
             'unit_price' => ($_value * 100),
@@ -27,7 +25,5 @@ class TicketHelper
             'tangible' => true,
             'venue' => $ticket['client_email']
         ];
-
-        return $tickets;
     }
 }
