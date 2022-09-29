@@ -46,7 +46,7 @@ class EventService
         $infoTicket = [];
 
         foreach ($data['tickets'] as $ticket) {
-            if ($this->ticket->isAvailable($ticket['id'])) {
+            if (!$this->ticket->isAvailable($ticket['id'])) {
                 return response()->json([
                     'error' => true,
                     'message' => 'Ingressos esgotados ou insuficientes.'
