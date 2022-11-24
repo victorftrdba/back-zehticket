@@ -40,7 +40,7 @@ class VerifyPaidBilletAndPixCommand extends Command
             $transaction = (new PagarMeService)->captureTransaction($payment->receipt);
             $transactionLink = (new PagarMeService)->captureTransactionLink($payment->receipt);
 
-            if ($payment->payment_type === Constants::CARTAO_CREDITO && $transaction->status === 'paid') {
+            if ($payment->payment_type === Constants::CARTAO_CREDITO && $transaction?->status === 'paid') {
                 collect($transaction->items)->map(function ($item) use ($codes, $payment) {
                     if ($item->venue === $payment->client_email) {
                         $boughtTicket = Ticket::find($item->id);
