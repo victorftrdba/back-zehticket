@@ -19,11 +19,7 @@ class PagarMeService
     public PagarMeHelper $pagarMeHelper;
     public string $key;
 
-    public function __construct(
-        Ticket        $ticket,
-        TicketHelper  $ticketHelper,
-        PagarMeHelper $pagarMeHelper
-    )
+    public function __construct()
     {
         if (env('APP_ENV') === 'production') {
             $this->key = 'ak_live_X4uQvjD8QWR1zLB1L7WwpwymUDzJmw';
@@ -32,9 +28,9 @@ class PagarMeService
         }
 
         $this->pagarMe = new PagarMe\Client($this->key);
-        $this->ticket = $ticket;
-        $this->ticketHelper = $ticketHelper;
-        $this->pagarMeHelper = $pagarMeHelper;
+        $this->ticket = app()->make(Ticket::class);
+        $this->ticketHelper = app()->make(TicketHelper::class);
+        $this->pagarMeHelper = app()->make(PagarMeHelper::class);
     }
 
     public function payWithCreditCard($user, $ticket, $card_info, $cpf, $address): array
